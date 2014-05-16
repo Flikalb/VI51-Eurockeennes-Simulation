@@ -21,7 +21,7 @@ public class FestivalGoer extends FestivalAgent {
 	
 	@Override
 	protected void turtleBehavior() {
-		moveForward(2);
+		moveForward(1);
 	}
 
 }

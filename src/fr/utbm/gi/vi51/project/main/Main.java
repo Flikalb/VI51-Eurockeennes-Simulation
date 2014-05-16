@@ -30,6 +30,7 @@ public class Main {
 	 
 	    // Step 3: initialize the Jaak kernel.
 	    JaakKernelController controller = JaakKernel.initializeKernel(environment, spawner);
+	    controller.getTimeManager().setWaitingDuration(500);
 	 
 	    // Step 4: create the UI.
 	    FestivalPanel panel = FestivalSystem.createPanel(controller.getKernelAddress());

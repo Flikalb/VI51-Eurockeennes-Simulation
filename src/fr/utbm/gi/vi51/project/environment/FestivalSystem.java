@@ -11,10 +11,10 @@ import fr.utbm.gi.vi51.project.gui.FestivalPanel;
 public class FestivalSystem {
 
 	//Set a wrapped environment.
-	private static final boolean isWrappedEnvironment = true;
+	private static final boolean isWrappedEnvironment = false;
 	
 	//Maximal number of festival goers.
-	private static final int FESTIVAL_GOER_COUNT = 10;
+	private static final int FESTIVAL_GOER_COUNT = 1;
 
 	//Width of the spawn area.
 	private static final int SPAWN_WIDTH = 10;

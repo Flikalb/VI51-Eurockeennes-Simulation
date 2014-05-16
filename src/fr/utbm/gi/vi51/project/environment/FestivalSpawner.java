@@ -1,13 +1,12 @@
 package fr.utbm.gi.vi51.project.environment;
 
-import org.arakhne.afc.math.MathUtil;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.spawner.JaakAreaSpawner;
 import org.janusproject.jaak.turtle.Turtle;
 import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.time.KernelTimeManager;
-import org.janusproject.kernel.util.random.RandomNumber;
 
+import fr.utbm.gi.vi51.project.agent.Direction;
 import fr.utbm.gi.vi51.project.agent.FestivalGoer;
 
 public class FestivalSpawner extends JaakAreaSpawner {
@@ -27,7 +26,7 @@ public class FestivalSpawner extends JaakAreaSpawner {
 
 	@Override
 	protected float computeSpawnedTurtleOrientation(KernelTimeManager time) {
-		return RandomNumber.nextFloat() * MathUtil.TWO_PI;
+		return 0.0f;
 	}
 
 	@Override

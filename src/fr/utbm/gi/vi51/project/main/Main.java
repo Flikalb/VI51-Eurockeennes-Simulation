@@ -1,6 +1,5 @@
 package fr.utbm.gi.vi51.project.main;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 import javax.swing.JFrame;
@@ -11,7 +10,6 @@ import org.janusproject.jaak.kernel.JaakKernelController;
 import org.janusproject.jaak.spawner.JaakSpawner;
 import org.janusproject.kernel.logger.LoggerUtil;
 
-import fr.utbm.gi.vi51.project.agent.FestivalGoer;
 import fr.utbm.gi.vi51.project.environment.FestivalSystem;
 import fr.utbm.gi.vi51.project.gui.FestivalFrame;
 import fr.utbm.gi.vi51.project.gui.FestivalPanel;

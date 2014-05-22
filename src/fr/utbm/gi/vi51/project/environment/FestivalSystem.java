@@ -14,7 +14,7 @@ public class FestivalSystem {
 	private static final boolean isWrappedEnvironment = false;
 	
 	//Maximal number of festival goers.
-	private static final int FESTIVAL_GOER_COUNT = 1;
+	private static final int FESTIVAL_GOER_COUNT = 100;
 
 	//Width of the spawn area.
 	private static final int SPAWN_WIDTH = 10;

@@ -1,17 +1,12 @@
 package fr.utbm.gi.vi51.project.gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.net.URL;
+import java.util.ArrayList;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.arakhne.afc.vmutil.Resources;
 import org.janusproject.jaak.envinterface.channel.GridStateChannel;
 import org.janusproject.jaak.envinterface.channel.GridStateChannelListener;
 
@@ -29,24 +24,21 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 		FESTIVAL_GOER_ICON = new ImageIcon("res/images/bonhomme.png");
 	}
 
-	private int width = 100;
-	private int height = 100;
+	private int width;
+	private int height;
 	
-	private FestivalGoerLabel fgl;
-	
+	private ArrayList<FestivalGoerLabel> goers;
 
 	private final GridStateChannel channel;
 
 
 	public FestivalPanel(GridStateChannel channel) {
-		setBackground(Color.WHITE);
+		setBackground(new Color(240, 231, 193));
 		this.channel = channel;
 		this.channel.addGridStateChannelListener(this);
-		fgl = new FestivalGoerLabel(FESTIVAL_GOER_ICON);
-		fgl.setVisible(false);
-		this.add(fgl);
-		validate();
-		repaint();
+		this.width = this.channel.getGridWidth();
+		this.height=this.channel.getGridHeight();
+		this.goers = new ArrayList<FestivalGoerLabel>();
 	}
 
 	public GridStateChannel getChannel() {
@@ -55,19 +47,29 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 
 	@Override
 	public void gridStateChanged() {
+
+		int i;
+		for(i=this.goers.size();i<this.channel.getTurtleCount();i++) {
+			this.goers.add(new FestivalGoerLabel(FESTIVAL_GOER_ICON));
+			this.add(this.goers.get(i));
+			validate();
+		}
+		i = 0;
 		for(int x=0; x<this.width; ++x) {
 			for(int y=0; y<this.height; ++y) {
 
 				if (this.channel.containsTurtle(x,y)) {
-					fgl.setLocation(simu2screen_x(x),simu2screen_y(y));
-					fgl.setAngle(this.channel.getOrientation(x, y));
-					if(!fgl.isVisible()) fgl.setVisible(true);
+					assert(i<this.channel.getTurtleCount());
+					
+					this.goers.get(i).setLocation(simu2screen_x(x),simu2screen_y(y));		
+					this.goers.get(i).setAngle(this.channel.getOrientation(x, y));
+					this.goers.get(i).setVisible(true);
+					i++;
 					
 				}
 				
 			}
 		}
-		if(!fgl.isVisible()) fgl.setVisible(true);
 		repaint();
 	}
 

@@ -6,7 +6,6 @@ import org.janusproject.jaak.turtle.Turtle;
 import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.time.KernelTimeManager;
 
-import fr.utbm.gi.vi51.project.agent.Direction;
 import fr.utbm.gi.vi51.project.agent.FestivalGoer;
 
 public class FestivalSpawner extends JaakAreaSpawner {

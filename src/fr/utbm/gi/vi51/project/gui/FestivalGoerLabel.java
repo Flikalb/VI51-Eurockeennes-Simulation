@@ -1,15 +1,7 @@
 package fr.utbm.gi.vi51.project.gui;
 
-import java.awt.AlphaComposite;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -32,6 +24,7 @@ public class FestivalGoerLabel extends JLabel{
 		super(image);
 		this.image=image;
 		this.angle=0.0f;
+		this.setVisible(false);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class FestivalGoer extends FestivalAgent {
 	@Override
 	protected void turtleBehavior() {
 		this.setHeading(this.getHeadingAngle()+RandomUtils.randomBinomial((float)Math.PI/4));
-		System.out.println(this.getHeadingAngle());	
+		//System.out.println(this.getHeadingAngle());	
 		moveForward(1);
 	}
 

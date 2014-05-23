@@ -40,8 +40,10 @@ public class FestivalSystem {
 		// Create the Jaak environment with the correct size.
 	    JaakEnvironment environment = new JaakEnvironment(WIDTH, HEIGHT);
 	    ActionApplier ap = environment.getActionApplier();
-	    Scene GreenHouse=new Scene( 0,  40,  20,  80,  20,  60,  ap);
-	    Scene GrandeScene=new Scene( 60,  5,  80,  35,  75,  20,  ap);
+	    Scene GreenHouse = new Scene( 0,  40,  20,  80,  20,  60,  ap);
+	    Scene GrandeScene = new Scene( 60,  5,  80,  35,  75,  20,  ap);
+            PumpRoom pmpRoom = new PumpRoom(50,50,100,100,80,80, ap);
+            
 	    environment.setWrapped(isWrappedEnvironment);
 	    return environment;
 	}

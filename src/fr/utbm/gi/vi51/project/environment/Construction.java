@@ -12,7 +12,7 @@ public abstract class Construction {
 	protected int Xid;
 	protected int Yid;
 	
-	protected int Xci; // centre d'interaction (entrée buvette, chanteur pour scène, etc)
+	protected int Xci; // centre d'interaction (entree buvette, chanteur pour scene, etc)
 	protected int Yci;
 	
 	protected ArrayList<Obstacle> o;

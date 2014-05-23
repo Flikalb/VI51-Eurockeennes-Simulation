@@ -1,11 +1,15 @@
 package fr.utbm.gi.vi51.project.gui;
 
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstaclePumpRoom;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -50,10 +54,6 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 
 	@Override
 	public void gridStateChanged() {
-
-		int i;
-                System.out.println("nbAgents : "+this.channel.getTurtleCount());
-               
                 repaint();
 	}
 
@@ -82,7 +82,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 	public synchronized void paint(Graphics g) 
 	{
 		// Standard drawing of the panel (mainly the background).
-                System.out.println("repaint");
+                //System.out.println("repaint");
 		super.paint(g);
                 
                 g.setColor(Color.BLUE);
@@ -98,11 +98,37 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
                                 
                                 for(EnvironmentalObject eo : this.channel.getEnvironmentalObjects(x, y)) 
 				{
-				    if(eo instanceof Obstacle) 
+                                    
+                                    if(eo instanceof ObstacleScene) 
 				    {
 				              g.setColor(Color.BLACK);
 				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
 				    }
+				    else if(eo instanceof ObstaclePumpRoom) 
+				    {
+				              g.setColor(Color.RED);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                                    }
+                                    else if(eo instanceof ObstacleWater) 
+				    {
+				              g.setColor(Color.CYAN);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                                    }
+				    else if(eo instanceof ObstacleTree) 
+				    {
+				              g.setColor(Color.GREEN);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }
+				    else if(eo instanceof ObstacleWaterClosed) 
+				    {
+				              g.setColor(Color.ORANGE);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }else if(eo instanceof Obstacle) 
+				    {
+				              g.setColor(Color.BLACK);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }
+                                    
 				}
                                 
 				if (this.channel.containsTurtle(x,y)) { // channel contient la grille de données

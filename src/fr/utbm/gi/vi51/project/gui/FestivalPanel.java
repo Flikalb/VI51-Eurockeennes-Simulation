@@ -12,8 +12,11 @@ import javax.swing.JPanel;
 
 import org.janusproject.jaak.envinterface.channel.GridStateChannel;
 import org.janusproject.jaak.envinterface.channel.GridStateChannelListener;
+import org.janusproject.jaak.envinterface.perception.EnvironmentalObject;
+import org.janusproject.jaak.envinterface.perception.Obstacle;
 
-public class FestivalPanel extends JPanel implements GridStateChannelListener {
+public class FestivalPanel extends JPanel implements GridStateChannelListener 
+{
 	/**
 	 * 
 	 */
@@ -76,9 +79,10 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 	}
 
 	@Override
-	public synchronized void paint(Graphics g) {
+	public synchronized void paint(Graphics g) 
+	{
 		// Standard drawing of the panel (mainly the background).
-            System.out.println("repaint");
+                System.out.println("repaint");
 		super.paint(g);
                 
                 g.setColor(Color.BLUE);
@@ -91,7 +95,16 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
                
 		for(int x=0; x<this.width; ++x) {
 			for(int y=0; y<this.height; ++y) {
-
+                                
+                                for(EnvironmentalObject eo : this.channel.getEnvironmentalObjects(x, y)) 
+				{
+				    if(eo instanceof Obstacle) 
+				    {
+				              g.setColor(Color.BLACK);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }
+				}
+                                
 				if (this.channel.containsTurtle(x,y)) { // channel contient la grille de données
                                     // pour chaque agent, on dessine une image
                                     AffineTransform trans = new AffineTransform();
@@ -99,11 +112,12 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
                                     trans.translate(simu2screen_x(x), simu2screen_y(y)); // On la positionne au bon endroit x,y
                                     trans.rotate( this.channel.getOrientation(x, y)+Math.PI/2 ); // Et on l'oriente dans son sens de marche
                                     g2d.drawImage(image, trans, this);
-				}
+				}      
+                                
 			}
 		}
-                
 
-	
 	}
 }
+            
+

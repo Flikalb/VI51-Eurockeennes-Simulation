@@ -1,7 +1,9 @@
 package fr.utbm.gi.vi51.project.environment;
 
 import org.janusproject.jaak.envinterface.channel.GridStateChannel;
+import org.janusproject.jaak.envinterface.perception.Obstacle;
 import org.janusproject.jaak.environment.model.JaakEnvironment;
+import org.janusproject.jaak.environment.solver.ActionApplier;
 import org.janusproject.jaak.spawner.JaakSpawner;
 import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.agent.Kernels;
@@ -37,6 +39,9 @@ public class FestivalSystem {
 	public static JaakEnvironment createEnvironment() {
 		// Create the Jaak environment with the correct size.
 	    JaakEnvironment environment = new JaakEnvironment(WIDTH, HEIGHT);
+	    ActionApplier ap = environment.getActionApplier();
+	    Scene GreenHouse=new Scene( 0,  40,  20,  80,  20,  60,  ap);
+	    Scene GrandeScene=new Scene( 60,  5,  80,  35,  75,  20,  ap);
 	    environment.setWrapped(isWrappedEnvironment);
 	    return environment;
 	}

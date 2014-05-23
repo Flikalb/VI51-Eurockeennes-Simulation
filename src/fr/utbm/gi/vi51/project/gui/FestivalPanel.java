@@ -2,6 +2,9 @@ package fr.utbm.gi.vi51.project.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -26,8 +29,6 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 
 	private int width;
 	private int height;
-	
-	private ArrayList<FestivalGoerLabel> goers;
 
 	private final GridStateChannel channel;
 
@@ -38,7 +39,6 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 		this.channel.addGridStateChannelListener(this);
 		this.width = this.channel.getGridWidth();
 		this.height=this.channel.getGridHeight();
-		this.goers = new ArrayList<FestivalGoerLabel>();
 	}
 
 	public GridStateChannel getChannel() {
@@ -49,28 +49,9 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 	public void gridStateChanged() {
 
 		int i;
-		for(i=this.goers.size();i<this.channel.getTurtleCount();i++) {
-			this.goers.add(new FestivalGoerLabel(FESTIVAL_GOER_ICON));
-			this.add(this.goers.get(i));
-			validate();
-		}
-		i = 0;
-		for(int x=0; x<this.width; ++x) {
-			for(int y=0; y<this.height; ++y) {
-
-				if (this.channel.containsTurtle(x,y)) {
-					assert(i<this.channel.getTurtleCount());
-					
-					this.goers.get(i).setLocation(simu2screen_x(x),simu2screen_y(y));		
-					this.goers.get(i).setAngle(this.channel.getOrientation(x, y));
-					this.goers.get(i).setVisible(true);
-					i++;
-					
-				}
-				
-			}
-		}
-		repaint();
+                System.out.println("nbAgents : "+this.channel.getTurtleCount());
+               
+                repaint();
 	}
 
 	@Override
@@ -97,7 +78,32 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 	@Override
 	public synchronized void paint(Graphics g) {
 		// Standard drawing of the panel (mainly the background).
+            System.out.println("repaint");
 		super.paint(g);
+                
+                g.setColor(Color.BLUE);
+                g.fillRect(0, 0, 200, 200);
+                
+                
+                Image image = FESTIVAL_GOER_ICON.getImage();
+                AffineTransform identity = new AffineTransform();
+                Graphics2D g2d = (Graphics2D)g;
+               
+		for(int x=0; x<this.width; ++x) {
+			for(int y=0; y<this.height; ++y) {
+
+				if (this.channel.containsTurtle(x,y)) { // channel contient la grille de données
+                                    // pour chaque agent, on dessine une image
+                                    AffineTransform trans = new AffineTransform();
+                                    trans.setTransform(identity);
+                                    trans.translate(simu2screen_x(x), simu2screen_y(y)); // On la positionne au bon endroit x,y
+                                    trans.rotate( this.channel.getOrientation(x, y)+Math.PI/2 ); // Et on l'oriente dans son sens de marche
+                                    g2d.drawImage(image, trans, this);
+				}
+			}
+		}
+                
+
 	
 	}
 }

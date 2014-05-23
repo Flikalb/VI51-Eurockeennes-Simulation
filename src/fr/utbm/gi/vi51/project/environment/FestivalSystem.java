@@ -14,7 +14,7 @@ public class FestivalSystem {
 	private static final boolean isWrappedEnvironment = false;
 	
 	//Maximal number of festival goers.
-	private static final int FESTIVAL_GOER_COUNT = 100;
+	private static final int FESTIVAL_GOER_COUNT = 10000;
 
 	//Width of the spawn area.
 	private static final int SPAWN_WIDTH = 10;
@@ -41,7 +41,7 @@ public class FestivalSystem {
 	    return environment;
 	}
 
-	public static JaakSpawner createSpwaner(JaakEnvironment environment) {
+	public static JaakSpawner createSpawner(JaakEnvironment environment) {
 		return new FestivalSpawner(FESTIVAL_GOER_COUNT,SPAWN_X,SPAWN_Y,SPAWN_WIDTH,SPAWN_HEIGHT);
 	}
 

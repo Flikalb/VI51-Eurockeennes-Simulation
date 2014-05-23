@@ -25,11 +25,11 @@ public class Main {
 	    JaakEnvironment environment = FestivalSystem.createEnvironment();
 	 
 	    // Step 2: create the spawner, i.e. the entry of the festival.
-	    JaakSpawner spawner = FestivalSystem.createSpwaner(environment);
+	    JaakSpawner spawner = FestivalSystem.createSpawner(environment);
 	    
 	    // Step 3: initialize the Jaak kernel.
 	    JaakKernelController controller = JaakKernel.initializeKernel(environment, spawner);
-	    controller.getTimeManager().setWaitingDuration(100);
+	    controller.getTimeManager().setWaitingDuration(50);
 	 
 	    // Step 4: create the UI.
 	    FestivalPanel panel = FestivalSystem.createPanel(controller.getKernelAddress());

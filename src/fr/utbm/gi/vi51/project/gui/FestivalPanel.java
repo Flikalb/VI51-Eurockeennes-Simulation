@@ -9,8 +9,11 @@ import javax.swing.JPanel;
 
 import org.janusproject.jaak.envinterface.channel.GridStateChannel;
 import org.janusproject.jaak.envinterface.channel.GridStateChannelListener;
+import org.janusproject.jaak.envinterface.perception.EnvironmentalObject;
+import org.janusproject.jaak.envinterface.perception.Obstacle;
 
-public class FestivalPanel extends JPanel implements GridStateChannelListener {
+public class FestivalPanel extends JPanel implements GridStateChannelListener 
+{
 	/**
 	 * 
 	 */
@@ -39,6 +42,10 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 		this.width = this.channel.getGridWidth();
 		this.height=this.channel.getGridHeight();
 		this.goers = new ArrayList<FestivalGoerLabel>();
+		
+		
+		
+		
 	}
 
 	public GridStateChannel getChannel() {
@@ -95,9 +102,31 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener {
 	}
 
 	@Override
-	public synchronized void paint(Graphics g) {
+	public synchronized void paint(Graphics g) 
+	{
 		// Standard drawing of the panel (mainly the background).
+		
 		super.paint(g);
+		
+		for(int x=0; x<this.channel.getGridWidth(); ++x) 
+		{
+            for(int y=0; y<this.channel.getGridHeight(); ++y) 
+            {
+		
+            	for(EnvironmentalObject eo : this.channel.getEnvironmentalObjects(x, y)) 
+				{
+				    if(eo instanceof Obstacle) 
+				    {
+				              g.setColor(Color.BLACK);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }
+				}
+            }
+       }
+		
+		
 	
 	}
 }
+            
+

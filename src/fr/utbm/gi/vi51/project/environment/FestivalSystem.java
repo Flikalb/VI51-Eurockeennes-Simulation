@@ -8,6 +8,11 @@ import org.janusproject.jaak.spawner.JaakSpawner;
 import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.agent.Kernels;
 
+import fr.utbm.gi.vi51.project.agent.Direction;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstaclePumpRoom;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
 import fr.utbm.gi.vi51.project.gui.FestivalPanel;
 
 public class FestivalSystem {
@@ -25,10 +30,10 @@ public class FestivalSystem {
 	private static final int SPAWN_HEIGHT = 10;
 	
 	//X coordinate of the spawn area.
-	private static final int SPAWN_X = 0;
+	private static final int SPAWN_X = 140;
 
 	//X coordinate of the spawn area.
-	private static final int SPAWN_Y = 0;
+	private static final int SPAWN_Y = 10;
 
 	//Width of the Jaak grid.
 	private static final int WIDTH = 200;
@@ -40,10 +45,89 @@ public class FestivalSystem {
 		// Create the Jaak environment with the correct size.
 	    JaakEnvironment environment = new JaakEnvironment(WIDTH, HEIGHT);
 	    ActionApplier ap = environment.getActionApplier();
-	    Scene GreenHouse = new Scene( 0,  40,  20,  80,  20,  60,  ap);
-	    Scene GrandeScene = new Scene( 60,  5,  80,  35,  75,  20,  ap);
-            PumpRoom pmpRoom = new PumpRoom(50,50,100,100,80,80, ap);
-            
+	    Scene GrandeScene = new Scene( 0,  40,  20,  80,  19,  60,20,  ap, Direction.EAST);
+	    Scene GreenHouse = new Scene( 60,  5,  80,  35,  79,  20,15,  ap, Direction.EAST);
+	    Scene Plage = new Scene( 120,  50,  130,  70,  120,  60,10,  ap, Direction.WEST);
+        
+	    //a manger!
+	    PumpRoom pmpRoom = new PumpRoom(70,70,72,72,71,71, ap);
+        PumpRoom pmpRoom2 = new PumpRoom(66,70,68,72,67,71, ap);
+        PumpRoom pmpRoom3 = new PumpRoom(62,70,64,72,63,71, ap);
+        
+        PumpRoom pmpRoom4 = new PumpRoom(70,58,72,60,71,58, ap);
+        PumpRoom pmpRoom5 = new PumpRoom(74,58,76,60,75,58, ap);
+        PumpRoom pmpRoom6 = new PumpRoom(78,58,80,60,79,58, ap);
+        
+        //aller aux toilettes!
+        WaterClosed WC1 = new WaterClosed(14,5,18,7,16,7, ap);
+        WaterClosed WC2 = new WaterClosed(20,5,24,7,22,7, ap);
+        WaterClosed WC3 = new WaterClosed(26,5,30,7,28,7, ap);
+        
+        WaterClosed WC4 = new WaterClosed(148,30,150,34,148,32, ap);
+        WaterClosed WC5 = new WaterClosed(148,36,150,40,148,38, ap);
+        WaterClosed WC6 = new WaterClosed(148,42,150,46,148,44, ap);
+        //foret
+        for(int x =0  ; x <160  ; ++x) 
+		{ 
+			for(int y = 0 ; y < 5 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+        for(int x =0  ; x <10  ; ++x) 
+		{ 
+			for(int y = 0 ; y < 40 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+        for(int x =150  ; x <160  ; ++x) 
+		{ 
+			for(int y = 20 ; y < 50 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+        for(int x =0  ; x <120  ; ++x) 
+		{ 
+			for(int y = 80 ; y < 100 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+        for(int x =70  ; x <90  ; ++x) 
+		{ 
+			for(int y = 60 ; y < 65 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+        
+        for(int x =60  ; x <80  ; ++x) 
+		{ 
+			for(int y = 65 ; y < 70 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleTree()); 
+			}
+		}
+           
+        //eau
+        for(int x =120  ; x <160  ; ++x) 
+		{ 
+			for(int y = 70 ; y < 100 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleWater()); 
+			}
+		}
+        for(int x =130  ; x <160  ; ++x) 
+		{ 
+			for(int y = 50 ; y < 100 ; ++y) 
+			{ 
+				ap.putObject(x, y, new ObstacleWater()); 
+			}
+		}
+        
+         
 	    environment.setWrapped(isWrappedEnvironment);
 	    return environment;
 	}

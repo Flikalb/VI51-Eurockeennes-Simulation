@@ -1,10 +1,12 @@
 package fr.utbm.gi.vi51.project.gui;
 
+import fr.utbm.gi.vi51.project.environment.SoundSubstance;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstaclePumpRoom;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -85,8 +87,8 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
                 //System.out.println("repaint");
 		super.paint(g);
                 
-                g.setColor(Color.BLUE);
-                g.fillRect(0, 0, 200, 200);
+               // g.setColor(Color.BLUE);
+               // g.fillRect(0, 0, 200, 200);
                 
                 
                 Image image = FESTIVAL_GOER_ICON.getImage();
@@ -96,10 +98,16 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 		for(int x=0; x<this.width; ++x) {
 			for(int y=0; y<this.height; ++y) {
                                 
-                                for(EnvironmentalObject eo : this.channel.getEnvironmentalObjects(x, y)) 
+           	for(EnvironmentalObject eo : this.channel.getEnvironmentalObjects(x, y)) 
 				{
-                                    
-                                    if(eo instanceof ObstacleScene) 
+                                	
+                	if(eo instanceof SoundSubstance) 
+				    {
+				              g.setColor(Color.YELLOW);
+				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				    }
+                    
+                    if(eo instanceof ObstacleScene) 
 				    {
 				              g.setColor(Color.BLACK);
 				              g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);

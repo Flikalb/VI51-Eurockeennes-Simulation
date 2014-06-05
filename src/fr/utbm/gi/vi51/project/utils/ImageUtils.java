@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.utils;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -11,6 +12,7 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
+import java.util.Random;
 import javax.swing.ImageIcon;
 
 public class ImageUtils {
@@ -20,6 +22,30 @@ public class ImageUtils {
 
      return tilt(bufImg,angle);
  }
+ 
+ public static String randomColor() {
+        Random random = new Random(); // Probably really put this somewhere where it gets executed only once
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+        return Integer.toHexString(new Color(red, green, blue).getRGB());
+    }
+ 
+ 
+ public static BufferedImage changeColor(BufferedImage bImage, int color) {
+            int w = bImage.getWidth(null);
+            int h = bImage.getHeight(null);
+            BufferedImage bImage2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            for (int i = 0; i < w; i++) {
+              for (int j = 0; j < h; j++) {
+                int p = bImage.getRGB(i, j);
+                //int a = (((p >> 16) & 0xff) + ((p >> 8) & 0xff) + (p & 0xff)) / 3;
+                if (p == 0xffffffff)
+                    bImage2.setRGB(i, j, color);
+              }
+            }
+            return bImage2;
+          }
 
  public static BufferedImage tilt(BufferedImage image, double angle) {
      double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
@@ -40,6 +66,28 @@ public class ImageUtils {
      GraphicsDevice gd = ge.getDefaultScreenDevice();
      return gd.getDefaultConfiguration();
  }
+ 
+ 
+ 
+ public static BufferedImage toBufferedImage(Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+ 
 
  // http://www.exampledepot.com/egs/java.awt.image/Image2Buf.html
  // An Image object cannot be converted to a BufferedImage object.
@@ -47,7 +95,7 @@ public class ImageUtils {
  // This example defines a method that does this.
 
  // This method returns a buffered image with the contents of an image
- public static BufferedImage toBufferedImage(Image image) {
+ /*public static BufferedImage toBufferedImage(Image image) {
      if (image instanceof BufferedImage) {
          return (BufferedImage)image;
      }
@@ -95,7 +143,7 @@ public class ImageUtils {
      g.dispose();
 
      return bimage;
- }
+ }*/
 
  // http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
  // This method returns true if the specified image has transparent pixels

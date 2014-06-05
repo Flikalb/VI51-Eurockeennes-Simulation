@@ -5,11 +5,15 @@ import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
+import fr.utbm.gi.vi51.project.utils.ImageUtils;
+import fr.utbm.gi.vi51.project.utils.RandomUtils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -133,6 +137,10 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
                                 
 				if (this.channel.containsTurtle(x,y)) { // channel contient la grille de données
                                     // pour chaque agent, on dessine une image
+                                    /*BufferedImage bufferedImage = ImageUtils.toBufferedImage(image);
+                                    //bufferedImage = ImageUtils.changeColor(bufferedImage, 15);
+                                    image =  Toolkit.getDefaultToolkit().createImage(bufferedImage.getSource());*/
+                                    
                                     AffineTransform trans = new AffineTransform();
                                     trans.setTransform(identity);
                                     trans.translate(simu2screen_x(x), simu2screen_y(y)); // On la positionne au bon endroit x,y
@@ -144,6 +152,9 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 		}
 
 	}
+        
+        
+        
 }
             
 

@@ -13,14 +13,17 @@ public class FestivalSpawner extends JaakAreaSpawner {
 	
 
 	private int budget;
+        private FestivalMap map;
 	
-	public FestivalSpawner(int x, int y, int width, int height) {
+	public FestivalSpawner(int x, int y, int width, int height, FestivalMap map) {
 		super(x, y, width, height);
+                this.map = map;
 	}
 	
-	public FestivalSpawner(int budget,int x, int y, int width, int height) {
+	public FestivalSpawner(int budget,int x, int y, int width, int height, FestivalMap map) {
 		super(x, y, width, height);
 		this.budget=budget;
+                this.map = map;
 	}
 
 	@Override
@@ -30,7 +33,9 @@ public class FestivalSpawner extends JaakAreaSpawner {
 
 	@Override
 	protected Turtle createTurtle(KernelTimeManager time) {
-		return new FestivalGoer();
+            FestivalGoer turtle = new FestivalGoer();
+            turtle.setCarteFestival(map); // On lui donne la carte du festival parce qu'on est trop gentil :)
+            return turtle;
 	}
 
 	@Override

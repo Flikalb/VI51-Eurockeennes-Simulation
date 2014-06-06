@@ -1,5 +1,7 @@
 package fr.utbm.gi.vi51.project.agent;
 
+import fr.utbm.gi.vi51.project.environment.Construction;
+import fr.utbm.gi.vi51.project.environment.FestivalMap;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
 
@@ -19,14 +21,34 @@ public class FestivalGoer extends FestivalAgent {
 	private static final long serialVersionUID = -5328824872764860436L;
         private static int i = 0;
         
-        private static final String EN_ATTENTE = "ср_аттенте";
-        private static final String MARCHE_VERS_DESTINATION = "Марцхер верс ун концерт";
-        private static final String CHERCHE_PLACE_PROCHE_SCENE = "цхерцхер уне место процхе де ла сцене";
+        
+        // ### Différent états du festivalier
+        
         private static final String WANDERING = "WANDERING";
+       
+        private static final String MARCHE_VERS_DESTINATION = "Марцхер верс ун концерт";
+        
+            // On touche une substance
+            private static final String CHERCHE_PLACE_PROCHE_SCENE = "цхерцхер уне место процхе де ла сцене";
+        
+            // On capte une file d'attente devant notre objectif
+            private static final String REMONTE_FILE_ATTENTE = "REMONTE_FILE_ATTENTE";
+            private static final String EN_ATTENTE = "ср_аттенте";
+        // On effectue l'action
+        private static final String EN_ACTION = "EN_ACTION"; // 
+            private static final String MANGER = "MANGER"; // 
+            private static final String FAIRE_SES_BESOINS = "FAIRE_SES_BESOINS"; // 
+            private static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; // 
+        // ### END
         
         
         private String _currentState = "";
         private Point2i _currentDestination;
+        private Construction _currentConstructDestination;
+        
+        private FestivalMap _carteFestival;
+
+    
         
         
         
@@ -101,6 +123,11 @@ public class FestivalGoer extends FestivalAgent {
                     
                     
                     System.out.println(Direction.getSens(getHeadingVector()).toString()+" "+getHeadingVector());
+                    
+                    
+                    _currentConstructDestination = _carteFestival.getRandomDestination();
+                    _currentState = MARCHE_VERS_DESTINATION;
+                    
                     break;
             }
 	}
@@ -119,7 +146,7 @@ public class FestivalGoer extends FestivalAgent {
                    // if(turtle.getPosition())
                 }*/
             }
-           /* Point2i seekPosition = _currentDestination;
+            Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();//_currentDestination;
             Point2i position = this.getPosition();
             if(!seekPosition.equals(position)) {
                   Vector2f direction = new Vector2f();
@@ -127,7 +154,7 @@ public class FestivalGoer extends FestivalAgent {
                   direction.normalize();
                   this.setHeading(direction);
                   moveForward(1);
-            }*/
+            }
             moveForward(1);
             
         }
@@ -164,6 +191,12 @@ public class FestivalGoer extends FestivalAgent {
            result.add(sensActuel.getNext().toRelativePoint());
            
            return result;
+        }
+        
+        
+        
+        public void setCarteFestival(FestivalMap _carteFestival) {
+            this._carteFestival = _carteFestival;
         }
 
 }

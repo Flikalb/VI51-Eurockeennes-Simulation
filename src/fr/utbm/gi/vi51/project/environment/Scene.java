@@ -10,6 +10,10 @@ public class Scene extends Construction {
 
 	int RayonInfluence;
 	Direction direction;
+        
+        private static final String CONCERT_JAZZ = "CONCERT_JAZZ";
+        private static final String CONCERT_ROCK = "CONCERT_ROCK";
+        
 	
 	public Scene(int Xsg, int Ysg, int Xid, int Yid, int Xci, int Yci, ActionApplier ap )
 	{

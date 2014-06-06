@@ -40,14 +40,25 @@ public class FestivalSystem {
 
 	//Height of the Jaak grid.
 	private static final int HEIGHT = 200;
+        
+        public static FestivalMap _festivalMap;
 
 	public static JaakEnvironment createEnvironment() {
 		// Create the Jaak environment with the correct size.
 	    JaakEnvironment environment = new JaakEnvironment(WIDTH, HEIGHT);
 	    ActionApplier ap = environment.getActionApplier();
+            
+            
+            _festivalMap = new FestivalMap();
+            
+            
 	    Scene GrandeScene = new Scene( 0,  40,  20,  80,  19,  60,20,  ap, Direction.EAST);
 	    Scene GreenHouse = new Scene( 60,  5,  80,  35,  79,  20,15,  ap, Direction.EAST);
 	    Scene Plage = new Scene( 120,  50,  130,  70,  120,  60,10,  ap, Direction.WEST);
+            
+            _festivalMap.addConstruction(GrandeScene);
+            _festivalMap.addConstruction(GreenHouse);
+            _festivalMap.addConstruction(Plage);
         
 	    //a manger!
 	    PumpRoom pmpRoom = new PumpRoom(70,70,72,72,71,71, ap);
@@ -58,6 +69,13 @@ public class FestivalSystem {
         PumpRoom pmpRoom5 = new PumpRoom(74,58,76,60,75,58, ap);
         PumpRoom pmpRoom6 = new PumpRoom(78,58,80,60,79,58, ap);
         
+            _festivalMap.addConstruction(pmpRoom);
+            _festivalMap.addConstruction(pmpRoom2);
+            _festivalMap.addConstruction(pmpRoom3);
+            _festivalMap.addConstruction(pmpRoom4);
+            _festivalMap.addConstruction(pmpRoom5);
+            _festivalMap.addConstruction(pmpRoom6);
+        
         //aller aux toilettes!
         WaterClosed WC1 = new WaterClosed(14,5,18,7,16,7, ap);
         WaterClosed WC2 = new WaterClosed(20,5,24,7,22,7, ap);
@@ -66,6 +84,8 @@ public class FestivalSystem {
         WaterClosed WC4 = new WaterClosed(148,30,150,34,148,32, ap);
         WaterClosed WC5 = new WaterClosed(148,36,150,40,148,38, ap);
         WaterClosed WC6 = new WaterClosed(148,42,150,46,148,44, ap);
+        
+        
         //foret
         for(int x =0  ; x <160  ; ++x) 
 		{ 
@@ -133,7 +153,7 @@ public class FestivalSystem {
 	}
 
 	public static JaakSpawner createSpawner(JaakEnvironment environment) {
-		return new FestivalSpawner(FESTIVAL_GOER_COUNT,SPAWN_X,SPAWN_Y,SPAWN_WIDTH,SPAWN_HEIGHT);
+		return new FestivalSpawner(FESTIVAL_GOER_COUNT,SPAWN_X,SPAWN_Y,SPAWN_WIDTH,SPAWN_HEIGHT, _festivalMap);
 	}
 
 	public static FestivalPanel createPanel(AgentAddress kernelAddress) {

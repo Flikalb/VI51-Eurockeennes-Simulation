@@ -21,7 +21,7 @@ public class FestivalSystem {
 	private static final boolean isWrappedEnvironment = false;
 	
 	//Maximal number of festival goers.
-	private static final int FESTIVAL_GOER_COUNT = 1000;
+	private static final int FESTIVAL_GOER_COUNT = 20;
 
 	//Width of the spawn area.
 	private static final int SPAWN_WIDTH = 10;
@@ -85,6 +85,12 @@ public class FestivalSystem {
         WaterClosed WC5 = new WaterClosed(148,36,150,40,148,38, ap);
         WaterClosed WC6 = new WaterClosed(148,42,150,46,148,44, ap);
         
+            _festivalMap.addConstruction(WC1);
+            _festivalMap.addConstruction(WC2);
+            _festivalMap.addConstruction(WC3);
+            _festivalMap.addConstruction(WC4);
+            _festivalMap.addConstruction(WC5);
+            _festivalMap.addConstruction(WC6);
         
         //foret
         for(int x =0  ; x <160  ; ++x) 

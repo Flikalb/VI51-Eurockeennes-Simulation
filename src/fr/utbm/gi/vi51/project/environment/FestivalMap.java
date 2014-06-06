@@ -53,24 +53,42 @@ public class FestivalMap
         return null;
     }
     
+    
+    public Construction getRandomConcerts()
+    {
+        return _scenes.get(RandomUtils.getRand(_scenes.size() - 1));
+    }
+    
     public Construction getNearestFoodStand()
     {
         return null;
     }
     
-    public Construction getAllFoodStands()
+    public ArrayList<Construction> getAllFoodStands()
     {
-        return null;
+        return _foodStands;
     }
+    
+    public Construction getRandomFoodStand()
+    {
+        return _foodStands.get(RandomUtils.getRand(_foodStands.size() - 1));
+    }
+    
+    
     
     public Construction getNearestToilet()
     {
         return null;
     }
     
-    public Construction getAllToilets()
+    public ArrayList<Construction> getAllToilets()
     {
-        return null;
+        return _toilets;
+    }
+    
+    public Construction getRandomToilet()
+    {
+        return _toilets.get(RandomUtils.getRand(_toilets.size() - 1));
     }
     
     public Construction getRandomDestination()
@@ -78,6 +96,11 @@ public class FestivalMap
         return _all.get(RandomUtils.getRand(_all.size() - 1));
     }
     
+    
+    public ArrayList<Construction> getAllDestinations()
+    {
+        return _all;
+    }
 
     
     

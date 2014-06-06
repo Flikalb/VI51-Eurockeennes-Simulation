@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.main;
 
+import fr.utbm.gi.vi51.project.agent.Direction;
 import java.util.logging.Level;
 
 import javax.swing.JFrame;

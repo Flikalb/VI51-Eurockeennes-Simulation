@@ -162,9 +162,9 @@ public class FestivalSystem {
 		return new FestivalSpawner(FESTIVAL_GOER_COUNT,SPAWN_X,SPAWN_Y,SPAWN_WIDTH,SPAWN_HEIGHT, _festivalMap);
 	}
 
-	public static FestivalPanel createPanel(AgentAddress kernelAddress) {
+	public static FestivalPanel createPanel(AgentAddress kernelAddress, JaakEnvironment environment) {
 		GridStateChannel channel = Kernels.get().getChannelManager().getChannel(kernelAddress, GridStateChannel.class);
 	    if (channel==null) throw new IllegalStateException();
-	    return new FestivalPanel(channel);
-	}	
+	    return new FestivalPanel(channel, environment);
+	}
 }

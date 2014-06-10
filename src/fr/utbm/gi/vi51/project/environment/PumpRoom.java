@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.environment;
 
+import fr.utbm.gi.vi51.project.environment.food.Food;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstaclePumpRoom;
 import org.janusproject.jaak.environment.solver.ActionApplier;
 
@@ -21,4 +22,12 @@ public class PumpRoom extends Construction{
 			}
 		}
 	}
+        
+        
+        public Food buyFood()
+        {
+            return new Food(5, 10, 30);
+        }
+        
+        
 }

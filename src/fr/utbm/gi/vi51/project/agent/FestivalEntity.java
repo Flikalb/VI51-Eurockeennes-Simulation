@@ -8,6 +8,7 @@ package fr.utbm.gi.vi51.project.agent;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
 import fr.utbm.gi.vi51.project.environment.Scene;
+import fr.utbm.gi.vi51.project.utils.Astar;
 import fr.utbm.gi.vi51.project.utils.RandomUtils;
 import java.util.ArrayList;
 import org.arakhne.afc.math.continous.object2d.Vector2f;
@@ -24,29 +25,29 @@ public class FestivalEntity extends Turtle
 {
     
     // ### Différent états d'actions du festivalier
-        
-        public static final String INIT = "INIT"; 
-        
-        public static final String WANDERING = "WANDERING";
-       
-        public static final String MARCHE_VERS_DESTINATION = "Марцхер верс ун концерт";
-        public static final String MARCHE_VERS_CONCERT = "MARCHE_VERS_CONCERT";
-        public static final String MARCHE_VERS_TOILETTES = "MARCHE_VERS_TOILETTES";
-        public static final String MARCHE_VERS_NOURRITURE = "MARCHE_VERS_NOURRITURE";
-        
-            // On touche une substance
-            public static final String CHERCHE_PLACE_PROCHE_SCENE = "цхерцхер уне место процхе де ла сцене";
-        
-            // On capte une file d'attente devant notre objectif
-            public static final String REMONTE_FILE_ATTENTE = "REMONTE_FILE_ATTENTE";
-            public static final String EN_ATTENTE = "ср_аттенте";
-        // On effectue l'action
-        public static final String EN_ACTION = "EN_ACTION"; // 
-            public static final String MANGER = "MANGER"; // 
-            public static final String FAIRE_SES_BESOINS = "FAIRE_SES_BESOINS"; // 
-            public static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; // 
+    
+    public static final String INIT = "INIT";
+    
+    public static final String WANDERING = "WANDERING";
+    
+    public static final String MARCHE_VERS_DESTINATION = "MARCHE_VERS_DESTINATION";
+    public static final String MARCHE_VERS_CONCERT = "MARCHE_VERS_CONCERT";
+    public static final String MARCHE_VERS_TOILETTES = "MARCHE_VERS_TOILETTES";
+    public static final String MARCHE_VERS_NOURRITURE = "MARCHE_VERS_NOURRITURE";
+    
+    // On touche une substance
+    public static final String CHERCHE_PLACE_PROCHE_SCENE = "CHERCHE_PLACE_PROCHE_SCENE";
+    
+    // On capte une file d'attente devant notre objectif
+    public static final String REMONTE_FILE_ATTENTE = "REMONTE_FILE_ATTENTE";
+    public static final String EN_ATTENTE = "EN_ATTENTE";
+    // On effectue l'action
+    public static final String EN_ACTION = "EN_ACTION"; //
+    public static final String MANGER = "MANGER"; //
+    public static final String FAIRE_SES_BESOINS = "FAIRE_SES_BESOINS"; //
+    public static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; //
     // ### END
-            
+    
     
     protected String _currentState = "";
     protected Point2i _currentDestination;
@@ -95,51 +96,63 @@ public class FestivalEntity extends Turtle
     }
     
     protected void applyPathfinding() {
-            
-            // Lucie, implante ton A* ici :)
-            
-            
-            // System.out.println("Position : "+getPosition().getX()+" "+getPosition().getY());
-           /* Collection<PerceivedTurtle> perceivedTurtles = getPerceivedTurtles();
-            for (PerceivedTurtle turtle : perceivedTurtles)
-            {
-                System.out.println(turtle.getHeadingVector()+" "+turtle.getRelativePosition(getTurtleBody())+" "+((isInFrontOf(turtle.getRelativePosition(this.getTurtleBody())))?"true":"false"));
-                //(TurtleBody)turtle.getSemantic()).getLastMotionInfluenceStatus();
-               /*if(p.isTurtle())
-                {
-                    
-                   // System.out.println(p.getSemantic());//turtle.getHeadingVector()+" "+this.getHeadingVector());
-                   // if(turtle.getPosition())
-                }
-            }*/
-            Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();//_currentDestination;
-            Point2i position = this.getPosition();
-            if(!seekPosition.equals(position)) {
-                  Vector2f direction = new Vector2f();
-                  direction.sub(seekPosition, position);
-                  direction.normalize();
-                  this.setHeading(direction);
-                  moveForward(1);
-            }
+        
+        applySeek();
+        return;
+        // Lucie, implante ton A* ici :)
+        
+       /* Point2i endPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        System.out.println("endPosition "+endPosition+" "+this.getPosition());
+        ArrayList<Point2i> path = Astar.findPath(this.getPosition(), endPosition);
+        System.out.println(path);
+        if(path != null)
+            followPath(path);*/
+        
+        
+    }
+    
+    protected void applySeek() {
+        
+       Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();//_currentDestination;
+        Point2i position = this.getPosition();
+        if(!seekPosition.equals(position)) {
+            Vector2f direction = new Vector2f();
+            direction.sub(seekPosition, position);
+            direction.normalize();
+            this.setHeading(direction);
             moveForward(1);
-            
         }
+        moveForward(1); 
+    }
+    
+    
+    
+    
+    protected void followPath(ArrayList<Point2i> path) {
+        for(Point2i p : path) {
+            Vector2f direction = new Vector2f();
+            direction.sub(p,this.getPosition());
+            direction.normalize();
+            this.setHeading(direction);
+            moveForward(1);
+        }
+    }
     
     
     protected void chooseToGoToARandomDestination() {
-            _currentConstructDestination = _carteFestival.getRandomDestination();
-                    if(_currentConstructDestination instanceof Scene)
-                        _currentState = MARCHE_VERS_CONCERT;
-                    else
-                        _currentState = MARCHE_VERS_DESTINATION;
+        _currentConstructDestination = _carteFestival.getRandomDestination();
+        if(_currentConstructDestination instanceof Scene)
+            _currentState = MARCHE_VERS_CONCERT;
+        else
+            _currentState = MARCHE_VERS_DESTINATION;
     }
     
     protected void chooseToGoToARandomConcert() {
-            _currentConstructDestination = _carteFestival.getRandomConcerts();
-                    if(_currentConstructDestination instanceof Scene)
-                        _currentState = MARCHE_VERS_CONCERT;
-                    else
-                        _currentState = MARCHE_VERS_DESTINATION;
+        _currentConstructDestination = _carteFestival.getRandomConcerts();
+        if(_currentConstructDestination instanceof Scene)
+            _currentState = MARCHE_VERS_CONCERT;
+        else
+            _currentState = MARCHE_VERS_DESTINATION;
     }
     
     

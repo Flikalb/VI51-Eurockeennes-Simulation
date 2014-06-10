@@ -14,9 +14,11 @@ import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
 import fr.utbm.gi.vi51.project.gui.FestivalPanel;
+import fr.utbm.gi.vi51.project.utils.Astar;
 
 public class FestivalSystem {
 
+        private static Astar astar;
 	//Set a wrapped environment.
 	private static final boolean isWrappedEnvironment = false;
 	
@@ -165,6 +167,7 @@ public class FestivalSystem {
 	public static FestivalPanel createPanel(AgentAddress kernelAddress, JaakEnvironment environment) {
 		GridStateChannel channel = Kernels.get().getChannelManager().getChannel(kernelAddress, GridStateChannel.class);
 	    if (channel==null) throw new IllegalStateException();
+            astar = new Astar(channel);
 	    return new FestivalPanel(channel, environment);
 	}
 }

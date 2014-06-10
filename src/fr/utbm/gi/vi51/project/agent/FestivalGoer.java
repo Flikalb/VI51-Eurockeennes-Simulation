@@ -6,6 +6,7 @@ import fr.utbm.gi.vi51.project.environment.PumpRoom;
 import fr.utbm.gi.vi51.project.environment.Scene;
 import fr.utbm.gi.vi51.project.environment.WaterClosed;
 import fr.utbm.gi.vi51.project.environment.food.Food;
+import fr.utbm.gi.vi51.project.utils.Astar;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
 
@@ -164,6 +165,8 @@ public class FestivalGoer extends FestivalEntity {
                            
                         }
                     }
+                    
+                    
                     
                     applyPathfinding();
                     

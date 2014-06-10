@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.agent;
 
+import static fr.utbm.gi.vi51.project.agent.FestivalEntity.MARCHE_VERS_DESTINATION;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
 import fr.utbm.gi.vi51.project.environment.PumpRoom;
@@ -58,15 +59,15 @@ public class FestivalGoer extends FestivalEntity {
                 
                 _informationsTurtle = new TurtleSemantic(this);
                 
-                
                i++;
               /*if(true)//i == 50)//i%50 == 0)
               {
                  _currentDestination = new Point2i(10,60);
                 // _currentState = MARCHE_VERS_DESTINATION;
               }*/
-                 
-            
+               
+               
+                          
 	}
 	
 	
@@ -74,12 +75,16 @@ public class FestivalGoer extends FestivalEntity {
 	@Override
 	protected void turtleBehavior() {
             /**/
+            
             Collection<Perceivable> perception = getPerception();
             
             JaakTimeManager jaakTimeManager = getJaakTimeManager();
               
             _jaugeDeFaimActuelle += jaakTimeManager.getWaitingDuration();
             _jaugeDeVessieActuelle += jaakTimeManager.getWaitingDuration();
+            
+            if(RandomUtils.getRand(100) > 95)
+                dropOff(new Food(1,1,1));
             
             
             if(!( _currentState == MARCHE_VERS_NOURRITURE || _currentState == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre

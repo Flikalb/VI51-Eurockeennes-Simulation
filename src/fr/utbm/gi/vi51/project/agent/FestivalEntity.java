@@ -15,6 +15,7 @@ import org.arakhne.afc.math.continous.object2d.Vector2f;
 import org.arakhne.afc.math.discrete.object2d.Point2i;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
+import org.janusproject.jaak.envinterface.influence.MotionInfluenceStatus;
 import org.janusproject.jaak.turtle.Turtle;
 
 /**
@@ -34,6 +35,8 @@ public class FestivalEntity extends Turtle
     public static final String MARCHE_VERS_CONCERT = "MARCHE_VERS_CONCERT";
     public static final String MARCHE_VERS_TOILETTES = "MARCHE_VERS_TOILETTES";
     public static final String MARCHE_VERS_NOURRITURE = "MARCHE_VERS_NOURRITURE";
+    public static final String MARCHE_VERS_DECHET = "MARCHE_VERS_DECHET";
+    
     
     // On touche une substance
     public static final String CHERCHE_PLACE_PROCHE_SCENE = "CHERCHE_PLACE_PROCHE_SCENE";
@@ -57,6 +60,9 @@ public class FestivalEntity extends Turtle
     
     
     protected TurtleSemantic _informationsTurtle;
+    
+    
+    private int _nbFailMoves = 0;
     
     public FestivalEntity() {
         super();
@@ -96,7 +102,6 @@ public class FestivalEntity extends Turtle
     }
     
     protected void applyPathfinding() {
-        
         applySeek();
         return;
         // Lucie, implante ton A* ici :)
@@ -112,9 +117,35 @@ public class FestivalEntity extends Turtle
     }
     
     protected void applySeek() {
-        
-       Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();//_currentDestination;
+
+        Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
+        
+        System.out.println("seekPosition : "+seekPosition);
+        // A VOIR ICI POUR TRUQUER LE SEEK POUR EVITER LES OBSTACLES
+        // Le précédent seek a été un gros fail
+       /* MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
+        if(lastMotionInfluenceStatus != null && lastMotionInfluenceStatus.isFailure())
+        {
+            _nbFailMoves++;
+            System.out.println("FAIL");
+            
+            if(_nbFailMoves < 2)
+                seekPosition.setY(getPosition().y());
+            else if(_nbFailMoves < 5)
+                seekPosition.setX(getPosition().x());
+            else if(_nbFailMoves < 10)
+            {
+                _currentState = WANDERING;
+                _nbFailMoves = 0;
+            }
+            
+        }
+        else
+            _nbFailMoves = 0;*/
+        
+       
+        
         if(!seekPosition.equals(position)) {
             Vector2f direction = new Vector2f();
             direction.sub(seekPosition, position);
@@ -122,9 +153,23 @@ public class FestivalEntity extends Turtle
             this.setHeading(direction);
             moveForward(1);
         }
-        moveForward(1); 
+         
     }
     
+    
+    protected void applyFlee() {
+        
+       Point2i fleePosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        Point2i position = this.getPosition();
+        if(!fleePosition.equals(position)) {
+            Vector2f direction = new Vector2f();
+            direction.sub(position, fleePosition);
+            direction.normalize();
+            this.setHeading(direction);
+            moveForward(1); 
+        }
+        
+    }
     
     
     
@@ -136,6 +181,13 @@ public class FestivalEntity extends Turtle
             this.setHeading(direction);
             moveForward(1);
         }
+    }
+    
+    
+    protected boolean arrived() {
+        Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        if(seekPosition == null) return false;
+        return seekPosition.equals(getPosition());
     }
     
     

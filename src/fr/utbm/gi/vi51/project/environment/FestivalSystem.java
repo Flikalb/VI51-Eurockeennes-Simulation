@@ -23,7 +23,7 @@ public class FestivalSystem {
 	private static final boolean isWrappedEnvironment = false;
 	
 	//Maximal number of festival goers.
-	private static final int FESTIVAL_GOER_COUNT = 20;
+	private static final int FESTIVAL_GOER_COUNT = 3;
 
 	//Width of the spawn area.
 	private static final int SPAWN_WIDTH = 10;
@@ -38,10 +38,10 @@ public class FestivalSystem {
 	private static final int SPAWN_Y = 10;
 
 	//Width of the Jaak grid.
-	private static final int WIDTH = 200;
+	private static final int WIDTH = 150;
 
 	//Height of the Jaak grid.
-	private static final int HEIGHT = 200;
+	private static final int HEIGHT = 90;
         
         public static FestivalMap _festivalMap;
 

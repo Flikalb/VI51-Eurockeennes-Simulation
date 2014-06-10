@@ -36,7 +36,7 @@ public class FestivalSpawner extends JaakAreaSpawner {
 	@Override
 	protected Turtle createTurtle(KernelTimeManager time) {
             FestivalEntity turtle;
-            if(budget%5 == 0)
+            if(budget%2 == 0)
             {
                 turtle = new FestivalTrashMan();
             }

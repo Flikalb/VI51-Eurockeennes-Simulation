@@ -51,6 +51,17 @@ public enum Direction {
             return values()[(ordinal()+4) % values().length];
          }
          
+         
+        public static Direction getSens(Point2i relativePoint)
+        {
+            for(Direction d : values())
+            {
+                if(d.toRelativePoint().getX() == relativePoint.getX() && d.toRelativePoint().getY() == relativePoint.getY())
+                    return d;
+            }
+            return null;
+        }
+         
         public static Direction getSens(Vector2f headingVector)
         {
             if(headingVector.getX() >= -0.5 &&  headingVector.getX() <= 0.5 && headingVector.getY() > 0)

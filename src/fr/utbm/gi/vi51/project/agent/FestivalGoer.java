@@ -107,7 +107,7 @@ public class FestivalGoer extends FestivalEntity {
         _jaugeDeFaimActuelle += jaakTimeManager.getWaitingDuration();
         _jaugeDeVessieActuelle += jaakTimeManager.getWaitingDuration();
         
-
+        
         
         if(!( _currentState == MARCHE_VERS_NOURRITURE || _currentState == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre
         {
@@ -147,7 +147,7 @@ public class FestivalGoer extends FestivalEntity {
          * dropOff(new Food(1,1,1));*/
         
         
-        System.out.println(_currentState+" "+_currentConstructDestination+" "+_currentDestination+" "+getPosition()+" "+_currentPath);
+        //System.out.println(_currentState+" "+_currentConstructDestination+" "+_currentDestination+" "+getPosition()+" "+_currentPath);
         
         SoundSubstance soundSubs;
         
@@ -158,6 +158,33 @@ public class FestivalGoer extends FestivalEntity {
                 goToAPlayingConcert();
                 // goTo(new Point2i(120,60));
                 break;
+                
+            case MARCHE_VERS_CONCERT:
+                
+                // Si on entends le son d'un concert, on se met en état de recherche d'une place plus proche
+                soundSubs = touchUp(SoundSubstance.class);
+                if(soundSubs != null && soundSubs.getScene().equals(_currentConstructDestination)) //touchUpWithSemantic
+                {
+                    _currentState = APPROCHER_SCENE;
+                    _currentPath = null;
+                    break;
+                }
+                
+                
+                if(_currentConstructDestination instanceof Scene)
+                {
+                    // Si notre scene objectif vient de voir son concert se terminer, on va ailleurs
+                    if(!((Scene)_currentConstructDestination).getIsPlaying())
+                    {
+                        goToAPlayingConcert();
+                        break;
+                    }
+                }
+                
+                moveToDestination();
+                
+                break;
+                
                 
             case APPROCHER_SCENE:
                 
@@ -185,47 +212,23 @@ public class FestivalGoer extends FestivalEntity {
                 
                 _listeningState++;
                 if(_listeningState > 1)
-                    _listeningState = 0;
-                
+                    _listeningState = 0; // Change l'etat du personnage (pour l'animation des bras)
+                // fin du concert, on va voir ailleurs
                 soundSubs = touchUp(SoundSubstance.class);
                 if(soundSubs == null)
                     goToAPlayingConcert();
                 break;
                 
                 
-            case MARCHE_VERS_CONCERT:
-                
-                // Si on entends le son d'un concert, on se met en état d'écoute
-                soundSubs = touchUp(SoundSubstance.class);
-                if(soundSubs != null && soundSubs.getScene().equals(_currentConstructDestination)) //touchUpWithSemantic
-                {
-                    _currentState = APPROCHER_SCENE;
-                    _currentPath = null;
-                }
                 
                 
-                if(_currentConstructDestination instanceof Scene)
-                {
-                    // Si notre scene objectif vient de voir son concert se terminer, on va ailleurs
-                    if(!((Scene)_currentConstructDestination).getIsPlaying())
-                        goToAPlayingConcert();
-                }
-                
-                
-                
-                //if(currentPosition has substance from _currentDestination Concert)
-                //{
-                //  _currentState = CHERCHE_PLACE_PROCHE_SCENE;
-                //  break;
-                // }
-                // Pas de break ici pour effectuer le cas applyPathfinding normal à la suite
             case MARCHE_VERS_DESTINATION:
             case MARCHE_VERS_TOILETTES:
             case MARCHE_VERS_NOURRITURE:
                 
                 /* ArrayList<Point2i> casesInFrontOfMe = getCasesInFrontOfMe();
                  * Point2i relativePoint = new Point2i(_currentConstructDestination.getInteractCenter().getX() - getX(), _currentConstructDestination.getInteractCenter().getY() - getY());
-                 * 
+                 *
                  * if(casesInFrontOfMe.contains(relativePoint))
                  * {*/
                 
@@ -265,7 +268,11 @@ public class FestivalGoer extends FestivalEntity {
                 
                 break;
                 
+            case ARRIVED_ON_OBJECTIVE:
                 
+                goToAPlayingConcert();
+                
+                break;
                 
                 
             case WANDERING:
@@ -294,7 +301,7 @@ public class FestivalGoer extends FestivalEntity {
      * _currentState = WANDERING;
      * return;
      * }
-     * 
+     *
      * }*/
     
     

@@ -67,6 +67,9 @@ public class FestivalEntity extends Turtle
     public static final String APPROCHER_SCENE = "APPROCHER_SCENE"; //
     public static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; //
     
+    public static final String ARRIVED_ON_OBJECTIVE = "ARRIVED_ON_OBJECTIVE"; //
+    
+    
     public static final String LEAVE_EUROCKS = "LEAVE_EUROCKS"; 
     // ### END
     
@@ -138,7 +141,8 @@ public class FestivalEntity extends Turtle
             Point2i relativePoint = new Point2i(seekPosition.getX() - this.getPosition().getX(),seekPosition.getY()-this.getPosition().getY());
             System.out.println("OK DISTANCE "+relativePoint);
             move(relativePoint.getX(), relativePoint.getY(), true);
-            _currentState = "";
+            
+            _currentState = ARRIVED_ON_OBJECTIVE;
             
             _previousPosition = getPosition();
             return;
@@ -175,75 +179,7 @@ public class FestivalEntity extends Turtle
         
         
         
-        _previousPosition = getPosition();
-         // Le précédent seek a été un gros fail
-        /*MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
-        System.out.println("motion "+lastMotionInfluenceStatus);
-        if(lastMotionInfluenceStatus != null && lastMotionInfluenceStatus.isFailure())
-        {
-            _nbFailMoves++;
-            System.out.println("FAIL");*/
-            
-            /*if(_nbFailMoves < 2)
-                seekPosition.setY(getPosition().y());
-            else if(_nbFailMoves < 5)
-                seekPosition.setX(getPosition().x());
-            else */
-            /*if(_nbFailMoves < 4)
-            {
-                Point2i endPosition = seekPosition;
-                System.out.println("endPosition "+endPosition+" "+this.getPosition());
-                _currentPath = Astar.findPath(this.getPosition(), endPosition, 5);
-                System.out.println("astar next step "+_currentPath);
-                
-                _nbFailMoves = 0;
-            }*/
-            
-       /* }
-        else
-            _nbFailMoves = 0;*/
-        
-        
-       /* Point2i endPosition = new Point2i(20,60);
-        System.out.println("endPosition "+endPosition+" "+this.getPosition());
-        ArrayList<Point2i> path = Astar.findPath(this.getPosition(), endPosition,10);
-        System.out.println("astar next step "+path.get(1));
-        Vector2f direction = new Vector2f();
-        direction.sub(path.get(1),this.getPosition());
-        direction.normalize();
-        this.setHeading(direction);
-        moveForward(1);*/
-        /*Point2i relativePoint = new Point2i(this.getPosition().getX()-path.get(1).getX(),this.getPosition().getY()-path.get(1).getY());
-         * Direction d = Direction.getSens(relativePoint);
-         * switch(d) {
-         * case NORTH:
-         * move(0,-1,true);
-         * break;
-         * case SOUTH:
-         * move(0,1,true);
-         * break;
-         * case EAST:
-         * move(1,0,true);
-         * break;
-         * case WEST:
-         * move(-1,0,true);
-         * break;
-         * case NORTHWEST:
-         * move(-1,-1,true);
-         * break;
-         * case NORTHEAST:
-         * move(1,-1,true);
-         * break;
-         * case SOUTHEAST:
-         * move(1,1,true);
-         * break;
-         * case SOUTHWEST:
-         * move(-1,1,true);
-         * break;
-         * default:
-         * break;
-         * }*/
-        
+        _previousPosition = getPosition(); 
         
     }
     
@@ -287,9 +223,6 @@ public class FestivalEntity extends Turtle
          * }
          */
         
-        // COYOTE, VOICI LA METHODE PERMETTANT DE RECUPERER L ACTIVItE D UN CONCERT DONNE
-        // TU PEUX M EXPLIQUER A L OCASSE CE QUE T AS FAIT? J AI DU MAL A PERCUTER :)
-        // BISOUS
     
     
     

@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.environment;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -7,10 +8,19 @@ import org.janusproject.jaak.envinterface.perception.Substance;
 
 public class SoundSubstance extends Substance {
 
-	public SoundSubstance(Object semantic) {
+        protected WeakReference<Scene> _scene;
+
+    
+        
+	public SoundSubstance(Object semantic, Scene scene) {
 		super(semantic);
-		// TODO Auto-generated constructor stub
+		_scene = new WeakReference<Scene>(scene);
 	}
+        
+        
+        public Scene getScene() {
+            return _scene.get();
+        }
 
 	@Override
 	public BigDecimal bigDecimalValue() {
@@ -33,7 +43,7 @@ public class SoundSubstance extends Substance {
 	@Override
 	protected Substance decrement(Substance arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
@@ -51,7 +61,7 @@ public class SoundSubstance extends Substance {
 	@Override
 	public Number getAmount() {
 		// TODO Auto-generated method stub
-		return null;
+		return 400;
 	}
 
 	@Override

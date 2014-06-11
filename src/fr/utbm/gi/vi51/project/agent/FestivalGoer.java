@@ -1,10 +1,13 @@
 package fr.utbm.gi.vi51.project.agent;
 
+import static fr.utbm.gi.vi51.project.agent.FestivalEntity.ECOUTER_CONCERT;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.MARCHE_VERS_DESTINATION;
+import static fr.utbm.gi.vi51.project.agent.FestivalEntity.WANDERING;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
 import fr.utbm.gi.vi51.project.environment.PumpRoom;
 import fr.utbm.gi.vi51.project.environment.Scene;
+import fr.utbm.gi.vi51.project.environment.SoundSubstance;
 import fr.utbm.gi.vi51.project.environment.WaterClosed;
 import fr.utbm.gi.vi51.project.environment.food.Food;
 import fr.utbm.gi.vi51.project.utils.Astar;
@@ -52,15 +55,17 @@ public class FestivalGoer extends FestivalEntity {
                 
                 _money = RandomUtils.getRand(0, 100);
                 
-                _currentState = WANDERING;
+                _currentState = INIT;
                 
-                _jaugeDeFaimTotale = RandomUtils.getRand(1*3*1000, 1*10*1000);
+                _jaugeDeFaimTotale = RandomUtils.getRand(1*50*1000, 1*100*1000);
                 _jaugeDeFaimActuelle = 0;
                 
-                _jaugeDeVessieTotale = RandomUtils.getRand(1*3*1000, 1*10*1000);
+                _jaugeDeVessieTotale = RandomUtils.getRand(1*20*1000, 1*100*1000);
                 _jaugeDeVessieActuelle = 0;
                 
                 _informationsTurtle = new TurtleSemantic(this);
+                
+               _frustum = new SquareTurtleFrustum(5);
                 
                i++;
               /*if(true)//i == 50)//i%50 == 0)
@@ -86,8 +91,8 @@ public class FestivalGoer extends FestivalEntity {
             _jaugeDeFaimActuelle += jaakTimeManager.getWaitingDuration();
             _jaugeDeVessieActuelle += jaakTimeManager.getWaitingDuration();
             
-            if(RandomUtils.getRand(100) > 95)
-                dropOff(new Food(1,1,1));
+            /*if(RandomUtils.getRand(100) > 95)
+                dropOff(new Food(1,1,1));*/
             
             
             if(!( _currentState == MARCHE_VERS_NOURRITURE || _currentState == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre
@@ -123,18 +128,40 @@ public class FestivalGoer extends FestivalEntity {
                 }
             }
                 
+            System.out.println(_currentState+" "+_currentConstructDestination+" "+_currentDestination+" "+getPosition()+" "+_currentPath);
             
-            
+            SoundSubstance soundSubs;
                 
             
             switch(_currentState)
             {
-                case EN_ATTENTE:
-                    attendreSonTour(perception, _currentDestination);
+                case INIT:
+                    goToAPlayingConcert();
+                   // goTo(new Point2i(120,60));
                     break;
+                    
+                case EN_ATTENTE:
+                    //attendreSonTour(perception, _currentDestination);
+                    break;
+                
+                case ECOUTER_CONCERT:
+                    moveForward(1);
+                    soundSubs = touchUp(SoundSubstance.class);
+                    if(soundSubs == null)
+                        goToAPlayingConcert();
+                    break;
+                 
                     
                 case MARCHE_VERS_CONCERT:
                     
+                    
+                    soundSubs = touchUp(SoundSubstance.class);
+                    if(soundSubs != null && soundSubs.getScene().equals(_currentConstructDestination)) //touchUpWithSemantic
+                    {
+                       // System.out.println("TOUCHE SUBSTANCE "+_currentState+" "+touchUp.getScene()+" "+_currentConstructDestination);
+                       _currentState = ECOUTER_CONCERT;
+                       _currentPath = null;
+                    }
                     //if(currentPosition has substance from _currentDestination Concert)
                     //{
                     //  _currentState = CHERCHE_PLACE_PROCHE_SCENE;
@@ -145,17 +172,21 @@ public class FestivalGoer extends FestivalEntity {
                 case MARCHE_VERS_TOILETTES:
                 case MARCHE_VERS_NOURRITURE:
                     
-                    ArrayList<Point2i> casesInFrontOfMe = getCasesInFrontOfMe();
+                   /* ArrayList<Point2i> casesInFrontOfMe = getCasesInFrontOfMe();
                     Point2i relativePoint = new Point2i(_currentConstructDestination.getInteractCenter().getX() - getX(), _currentConstructDestination.getInteractCenter().getY() - getY());
-                    //System.out.println("Relative point "+ relativePoint);
                     
                     if(casesInFrontOfMe.contains(relativePoint))
+                    {*/
+                    
+                    Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+                    float distance = seekPosition.distance(getPosition());
+                    if(distance == 1.0)
                     {
                         if(_currentConstructDestination instanceof WaterClosed)
                         {
                             _jaugeDeVessieActuelle = 0;
                             System.out.println("Ahhhh ça va mieux :)");
-                            chooseToGoToARandomConcert();
+                            goToAPlayingConcert();
                         }
                         else if(_currentConstructDestination instanceof PumpRoom)
                         {
@@ -166,7 +197,7 @@ public class FestivalGoer extends FestivalEntity {
                                 _money -= _nourriture.getPrice();
                                  _jaugeDeFaimActuelle = 0;
                                 System.out.println("Ahhhh j'ai bien mangé :)");
-                                chooseToGoToARandomConcert();
+                                goToAPlayingConcert();
                             }
                                 
                                 
@@ -176,7 +207,7 @@ public class FestivalGoer extends FestivalEntity {
                     
                     
                     
-                    applyPathfinding();
+                    moveToDestination();
                     
                     
                     
@@ -184,46 +215,20 @@ public class FestivalGoer extends FestivalEntity {
                     
                     
                 case WANDERING:
-                //default:
                     this.setHeading(this.getHeadingAngle()+RandomUtils.randomBinomial((float)Math.PI/4));
-                   // this.setHeading(new Vector2f(1,-1));
                     moveForward(1);
-                    //ArrayList<Point2i> casesInFrontOfMe = getCasesInFrontOfMe();
-                   /* System.out.println("Position : "+Direction.getSens(getHeadingVector()));
-                    for(Point2i point : casesInFrontOfMe)
-                    {
-                        System.out.println("Cases : "+point);
-                    }*/
-                    
-                   /* Collection<PerceivedTurtle> perceivedTurtles = getPerceivedTurtles();
-                    for (PerceivedTurtle turtle : perceivedTurtles)
-                    {
-                        //System.out.println(turtle.getHeadingVector()+" "+turtle.getRelativePosition(getTurtleBody())+" "+((isInFrontOf(turtle.getRelativePosition(this.getTurtleBody())))?"true":"false"));
-                        if(isInFrontOf(turtle.getRelativePosition(this.getTurtleBody())))
-                        {
-                            Direction sensTurtle = Direction.getSens(turtle.getHeadingVector());
-                           // setHeading(sensTurtle.toFloat());//.getOpposite()
-                        }
-                        
-                        
-                    }*/
-                    
-                    
-                    //System.out.println(Direction.getSens(getHeadingVector()).toString()+" "+getHeadingVector());
-                    
-                    
-                    chooseToGoToARandomConcert();
                     
                     break;
                     
                 default:
+                    System.out.println("position : "+getPosition());
                 	break;
             }
 	}
 
         
 
-        private void attendreSonTour(Collection<Perceivable> perception, Point2i destination) {
+       /* private void attendreSonTour(Collection<Perceivable> perception, Point2i destination) {
             if(hasReachedDestination()){
                 // Apply action
                 // Return to wandering state
@@ -231,7 +236,7 @@ public class FestivalGoer extends FestivalEntity {
                 return;
             }
             
-        }
+        }*/
         
            
         

@@ -59,6 +59,21 @@ public class FestivalMap
         return _scenes.get(RandomUtils.getRand(_scenes.size() - 1));
     }
     
+    
+    public Construction getPlayingConcerts()
+    {
+        ArrayList<Construction> result = new ArrayList<>();
+        for(Construction sc : _scenes)
+        {
+            Scene scene = (Scene)sc;
+            if(scene.getIsPlaying())
+                result.add(sc);
+        }
+        if(result.size() < 1)
+            return null;
+        return result.get(RandomUtils.getRand(result.size() - 1));
+    }
+    
     public Construction getNearestFoodStand()
     {
         return null;

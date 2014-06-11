@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.arakhne.afc.math.discrete.object2d.Point2i;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
+import org.janusproject.jaak.envinterface.frustum.SquareTurtleFrustum;
 import org.janusproject.jaak.envinterface.perception.EnvironmentalObject;
 import org.janusproject.jaak.envinterface.perception.Perceivable;
 import org.janusproject.jaak.envinterface.time.JaakTimeManager;
@@ -49,6 +50,7 @@ public class FestivalTrashMan extends FestivalEntity {
     public FestivalTrashMan() {
         super();
         _informationsTurtle = new TurtleSemantic(this);
+        _frustum = new SquareTurtleFrustum(10);
         _currentState = INIT;
     }
     
@@ -69,7 +71,7 @@ public class FestivalTrashMan extends FestivalEntity {
         _timeSincePreviousAction += jaakTimeManager.getWaitingDuration();
         
         
-        System.out.println(""+getPosition());
+       // System.out.println(""+getPosition());
         
         Collection<Perceivable> perception = getPerception();
             for(Perceivable tmpObj : perception)
@@ -106,7 +108,7 @@ public class FestivalTrashMan extends FestivalEntity {
 
             
         }
-        System.out.println("state : "+_currentState);
+        //System.out.println("state : "+_currentState);
         
         switch(_currentState)
         {
@@ -125,7 +127,7 @@ public class FestivalTrashMan extends FestivalEntity {
                 }
                 
              case MARCHE_VERS_DECHET:    
-                applyPathfinding();
+                moveToDestination();
                 
                 
                 break;

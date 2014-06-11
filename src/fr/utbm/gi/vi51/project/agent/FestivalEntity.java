@@ -31,13 +31,13 @@ public class FestivalEntity extends Turtle
 {
     
     // ### Différent états d'actions du festivalier
-
+    
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -1164713901331040192L;
-
-	private static final SquareTurtleFrustum frus = new SquareTurtleFrustum(5000);
+     *
+     */
+    private static final long serialVersionUID = -1164713901331040192L;
+    
+    
     
     public static final String INIT = "INIT";
     
@@ -48,6 +48,9 @@ public class FestivalEntity extends Turtle
     public static final String MARCHE_VERS_TOILETTES = "MARCHE_VERS_TOILETTES";
     public static final String MARCHE_VERS_NOURRITURE = "MARCHE_VERS_NOURRITURE";
     public static final String MARCHE_VERS_DECHET = "MARCHE_VERS_DECHET";
+    
+    
+    public static final String FOLLOW_PATH = "FOLLOW_PATH";
     
     
     // On touche une substance
@@ -67,11 +70,16 @@ public class FestivalEntity extends Turtle
     protected String _currentState = "";
     protected Point2i _currentDestination;
     protected Construction _currentConstructDestination;
+    protected ArrayList<Point2i> _currentPath;
+    
+    protected Point2i _previousPosition;
     
     protected FestivalMap _carteFestival;
     
     
     protected TurtleSemantic _informationsTurtle;
+    
+    protected SquareTurtleFrustum _frustum;
     
     
     private int _nbFailMoves = 0;
@@ -85,7 +93,7 @@ public class FestivalEntity extends Turtle
     
     @Override
     protected TurtleBody createTurtleBody(TurtleBodyFactory factory) {
-        TurtleBody turtleBody = factory.createTurtleBody(getAddress(),frus);
+        TurtleBody turtleBody = factory.createTurtleBody(getAddress(), _frustum);
         turtleBody.setSemantic(_informationsTurtle);
         
         return turtleBody;
@@ -109,22 +117,87 @@ public class FestivalEntity extends Turtle
         result.add(sensActuel.getPrevious().toRelativePoint());
         result.add(sensActuel.toRelativePoint());
         result.add(sensActuel.getNext().toRelativePoint());
-        
         return result;
     }
     
-    protected void applyPathfinding() {
-        //applySeek();
-        //return;
-        // Lucie, implante ton A* ici :)
+    
+    protected void moveToDestination() {
         
-       /* Point2i endPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
-        System.out.println("endPosition "+endPosition+" "+this.getPosition());
-        ArrayList<Point2i> path = Astar.findPath(this.getPosition(), endPosition);
-        System.out.println(path);
-        if(path != null)
-            followPath(path);*/
-        Point2i endPosition = new Point2i(20,60);
+        Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        float distance = seekPosition.distance(getPosition());
+        //System.out.println("rel : "+distance+" "+seekPosition+" "+getPosition());
+        if(distance == 1.0) // Arrive sur l'objectif
+        {
+            Point2i relativePoint = new Point2i(seekPosition.getX() - this.getPosition().getX(),seekPosition.getY()-this.getPosition().getY());
+            System.out.println("OK DISTANCE "+relativePoint);
+            move(relativePoint.getX(), relativePoint.getY(), true);
+            _currentState = "";
+            
+            _previousPosition = getPosition();
+            return;
+        }
+        
+        if(distance < 10.0)
+        {
+            _currentPath = null;
+        }
+        
+        
+        
+        // Si on a déjà calculé un pathfinding
+        if(_currentPath != null)
+        {
+            gotoNextNodeInPath(); // On le suit
+            _previousPosition = getPosition();
+            return;
+        }
+        
+        applySeek(); // Sinon on seek jusqu'à ce que l'on soit bloqué
+        
+        if(getPosition().equals(_previousPosition))
+        {
+            //System.out.println("On est bloqué :(");
+            Point2i endPosition = seekPosition;
+           // System.out.println("endPosition "+endPosition+" "+this.getPosition());
+            _currentPath = Astar.findPath(this.getPosition(), endPosition, 100);
+            if(_currentPath != null && _currentPath.size() > 0)
+                _currentPath.remove(0);
+            //System.out.println("astar next step "+_currentPath);
+            
+        }
+        
+        
+        
+        _previousPosition = getPosition();
+         // Le précédent seek a été un gros fail
+        /*MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
+        System.out.println("motion "+lastMotionInfluenceStatus);
+        if(lastMotionInfluenceStatus != null && lastMotionInfluenceStatus.isFailure())
+        {
+            _nbFailMoves++;
+            System.out.println("FAIL");*/
+            
+            /*if(_nbFailMoves < 2)
+                seekPosition.setY(getPosition().y());
+            else if(_nbFailMoves < 5)
+                seekPosition.setX(getPosition().x());
+            else */
+            /*if(_nbFailMoves < 4)
+            {
+                Point2i endPosition = seekPosition;
+                System.out.println("endPosition "+endPosition+" "+this.getPosition());
+                _currentPath = Astar.findPath(this.getPosition(), endPosition, 5);
+                System.out.println("astar next step "+_currentPath);
+                
+                _nbFailMoves = 0;
+            }*/
+            
+       /* }
+        else
+            _nbFailMoves = 0;*/
+        
+        
+       /* Point2i endPosition = new Point2i(20,60);
         System.out.println("endPosition "+endPosition+" "+this.getPosition());
         ArrayList<Point2i> path = Astar.findPath(this.getPosition(), endPosition,10);
         System.out.println("astar next step "+path.get(1));
@@ -132,133 +205,119 @@ public class FestivalEntity extends Turtle
         direction.sub(path.get(1),this.getPosition());
         direction.normalize();
         this.setHeading(direction);
-        moveForward(1);
+        moveForward(1);*/
         /*Point2i relativePoint = new Point2i(this.getPosition().getX()-path.get(1).getX(),this.getPosition().getY()-path.get(1).getY());
-        Direction d = Direction.getSens(relativePoint);
-        switch(d) {
-        case NORTH:
-        	move(0,-1,true);
-        	break;
-        case SOUTH:
-        	move(0,1,true);
-        	break;
-        case EAST:
-        	move(1,0,true);
-        	break;
-        case WEST:
-        	move(-1,0,true);
-        	break;
-        case NORTHWEST:
-        	move(-1,-1,true);
-        	break;
-        case NORTHEAST:
-        	move(1,-1,true);
-        	break;
-        case SOUTHEAST:
-        	move(1,1,true);
-        	break;
-        case SOUTHWEST:
-        	move(-1,1,true);
-        	break;
-        default:
-        	break;
-        }*/
+         * Direction d = Direction.getSens(relativePoint);
+         * switch(d) {
+         * case NORTH:
+         * move(0,-1,true);
+         * break;
+         * case SOUTH:
+         * move(0,1,true);
+         * break;
+         * case EAST:
+         * move(1,0,true);
+         * break;
+         * case WEST:
+         * move(-1,0,true);
+         * break;
+         * case NORTHWEST:
+         * move(-1,-1,true);
+         * break;
+         * case NORTHEAST:
+         * move(1,-1,true);
+         * break;
+         * case SOUTHEAST:
+         * move(1,1,true);
+         * break;
+         * case SOUTHWEST:
+         * move(-1,1,true);
+         * break;
+         * default:
+         * break;
+         * }*/
         
         
     }
     
     protected void applySeek() {
-    	
-    	
-    	/*Point2i seekPosition = new Point2i();
-    	//for(EnvironmentalObject p : getPerceivedObjects()) {
-    	for(EnvironmentalObject p : getPerceivedObjects()) 
-    	{
-    		
-    			if(p instanceof ObstacleScene)
-    			{ 
-    				ObstacleScene temp= (ObstacleScene)p;
-    				//System.out.print(p.getPosition());
-    					// C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions 
-    					// concernant les concerts
-    				
-    				
-    					
-    						if(temp.getScene().getisplaying())
-    						{
-    							seekPosition=(temp.getScene().getEmissionPosition());
-    							//System.out.println(seekPosition.toString()); debug
-    							break;
-    						}
-    			}
-		}
-    	*/ 
-    	
-    	// COYOTE, VOICI LA METHODE PERMETTANT DE RECUPERER L ACTIVItE D UN CONCERT DONNE
-    	// TU PEUX M EXPLIQUER A L OCASSE CE QUE T AS FAIT? J AI DU MAL A PERCUTER :)
-    	// BISOUS
-
+        
         Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
         
-        System.out.println("seekPosition : "+seekPosition);
-       
-        
-        
-        
-        // A VOIR ICI POUR TRUQUER LE SEEK POUR EVITER LES OBSTACLES
-        // Le précédent seek a été un gros fail
-        MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
-        if(lastMotionInfluenceStatus != null && lastMotionInfluenceStatus.isFailure())
-        {
-            _nbFailMoves++;
-            System.out.println("FAIL");
-            
-            if(_nbFailMoves < 2)
-                seekPosition.setY(getPosition().y());
-            else if(_nbFailMoves < 5)
-                seekPosition.setX(getPosition().x());
-            else if(_nbFailMoves < 10)
-            {
-                _currentState = WANDERING;
-                _nbFailMoves = 0;
-            }
-            
-        }
-        else
-            _nbFailMoves = 0;
-        
-       
-    	if(!seekPosition.equals(position)) {
+        if(!seekPosition.equals(position)) {
             Vector2f direction = new Vector2f();
             direction.sub(seekPosition, position);
             direction.normalize();
             this.setHeading(direction);
             moveForward(1);
-        }
+        } 
         
-        
-         
     }
+    
+    
+    /*Point2i seekPosition = new Point2i();
+         * //for(EnvironmentalObject p : getPerceivedObjects()) {
+         * for(EnvironmentalObject p : getPerceivedObjects())
+         * {
+         * 
+         * if(p instanceof ObstacleScene)
+         * {
+         * ObstacleScene temp= (ObstacleScene)p;
+         * //System.out.print(p.getPosition());
+         * // C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions
+         * // concernant les concerts
+         * 
+         * 
+         * 
+         * if(temp.getScene().getisplaying())
+         * {
+         * seekPosition=(temp.getScene().getEmissionPosition());
+         * //System.out.println(seekPosition.toString()); debug
+         * break;
+         * }
+         * }
+         * }
+         */
+        
+        // COYOTE, VOICI LA METHODE PERMETTANT DE RECUPERER L ACTIVItE D UN CONCERT DONNE
+        // TU PEUX M EXPLIQUER A L OCASSE CE QUE T AS FAIT? J AI DU MAL A PERCUTER :)
+        // BISOUS
+    
+    
+    
     
     
     protected void applyFlee() {
         
-       Point2i fleePosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        Point2i fleePosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
         if(!fleePosition.equals(position)) {
             Vector2f direction = new Vector2f();
             direction.sub(position, fleePosition);
             direction.normalize();
             this.setHeading(direction);
-            moveForward(1); 
+            moveForward(1);
         }
         
     }
     
     
+    protected void gotoNextNodeInPath() {
+        if(_currentPath == null || _currentPath.size() == 0)
+            return;
+        Point2i p = _currentPath.remove(0);
+        if(_currentPath.size() == 0)
+            _currentPath = null;
+        Vector2f direction = new Vector2f();
+        direction.sub(p,this.getPosition());
+        direction.normalize();
+        this.setHeading(direction);
+        moveForward(1);
+    }
     
-    protected void followPath(ArrayList<Point2i> path) {
+    
+    /*protected void followPath(ArrayList<Point2i> path) {
         for(Point2i p : path) {
             Vector2f direction = new Vector2f();
             direction.sub(p,this.getPosition());
@@ -266,7 +325,7 @@ public class FestivalEntity extends Turtle
             this.setHeading(direction);
             moveForward(1);
         }
-    }
+    }*/
     
     
     protected boolean arrived() {
@@ -290,6 +349,17 @@ public class FestivalEntity extends Turtle
             _currentState = MARCHE_VERS_CONCERT;
         else
             _currentState = MARCHE_VERS_DESTINATION;
+    }
+    
+    protected void goToAPlayingConcert() {
+        _currentConstructDestination = _carteFestival.getPlayingConcerts();
+        if(_currentConstructDestination != null)
+            _currentState = MARCHE_VERS_CONCERT;
+    }
+    
+     protected void goTo(Point2i destination) {
+         _currentState = MARCHE_VERS_DESTINATION;
+         _currentDestination = destination;
     }
     
     

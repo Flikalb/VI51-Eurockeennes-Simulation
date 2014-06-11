@@ -11,6 +11,7 @@ import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
+import org.janusproject.jaak.envinterface.perception.Obstacle;
  
 public class Astar {
      
@@ -26,7 +27,12 @@ public class Astar {
      
     public static ArrayList<Point2i> findPath(Point2i startPosition, Point2i endPosition, int maxDepth) {
          
-        if(!areCoordinatesAvailable(endPosition.x(),endPosition.y())) return null;
+        
+        /*if(!areCoordinatesAvailable(endPosition.x(),endPosition.y()))
+        {
+            System.out.println("Erreur endCoordonnées");
+            return null;
+        }*/
          
         NodeRecord currentNode=null;
          
@@ -91,8 +97,8 @@ public class Astar {
              
         }
          
-        if(currentNode.getConnection().getFromNode()==null) {
-            return null;
+        if(currentNode == null || currentNode.getConnection()== null || currentNode.getConnection().getFromNode()==null) {
+            return new ArrayList<Point2i>();
         }
         else {
             ArrayList<Point2i> path = new ArrayList<Point2i>();
@@ -228,11 +234,12 @@ public class Astar {
             || (y>channel.getGridHeight()-1) ) return false;
          
         for(EnvironmentalObject eo : channel.getEnvironmentalObjects(x, y)) {
-            if(eo instanceof ObstaclePumpRoom 
+            /*
                     || eo instanceof ObstacleScene 
                     || eo instanceof ObstacleTree 
                     || eo instanceof ObstacleWater
-                    || eo instanceof ObstacleWaterClosed)
+                    || eo instanceof ObstacleWaterClosed)*/
+            if(eo instanceof Obstacle)
                 return false;
         }
          

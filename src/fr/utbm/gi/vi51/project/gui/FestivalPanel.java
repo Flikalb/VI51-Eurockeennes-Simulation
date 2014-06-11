@@ -124,7 +124,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 
 					if(eo instanceof SoundSubstance) 
 					{
-						g.setColor(Color.YELLOW);
+						g.setColor(new Color(255, 255, 0, 50));//Color.YELLOW);
 						g.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
 					}
 

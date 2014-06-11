@@ -63,6 +63,8 @@ public class FestivalEntity extends Turtle
     public static final String EN_ACTION = "EN_ACTION"; //
     public static final String MANGER = "MANGER"; //
     public static final String FAIRE_SES_BESOINS = "FAIRE_SES_BESOINS"; //
+    
+    public static final String APPROCHER_SCENE = "APPROCHER_SCENE"; //
     public static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; //
     
     public static final String LEAVE_EUROCKS = "LEAVE_EUROCKS"; 

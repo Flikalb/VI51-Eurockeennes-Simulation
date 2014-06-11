@@ -47,6 +47,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 	public static final int CELL_SIZE = 10;
 
 	private static final ImageIcon FESTIVAL_GOER_ICON;
+        private static final ImageIcon FESTIVAL_GOER_ICON_2;
 	private static final ImageIcon FESTIVAL_GOER_WITH_FOOD_ICON;
 	private static final ImageIcon SECURITY_AGENT_ICON;
 	private static final ImageIcon TRASH_MAN_ICON;
@@ -54,6 +55,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 
 	static {
 		FESTIVAL_GOER_ICON = new ImageIcon("res/images/bonhomme.png");
+                FESTIVAL_GOER_ICON_2 = new ImageIcon("res/images/bonhomme2.png");
 		FESTIVAL_GOER_WITH_FOOD_ICON = new ImageIcon("res/images/bonhommeAvecVerre.png");
 		SECURITY_AGENT_ICON = new ImageIcon("res/images/agentSecu.png");
 		TRASH_MAN_ICON = new ImageIcon("res/images/trashMan.png");
@@ -220,7 +222,21 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 							if(tmpData.getOwner() instanceof FestivalGoer)
 							{
 								FestivalGoer festivalier = (FestivalGoer)tmpData.getOwner();
-								g2d.drawImage(festivalier.carryingFood()?FESTIVAL_GOER_WITH_FOOD_ICON.getImage(): FESTIVAL_GOER_ICON.getImage(), trans, this);
+                                                                Image tmpImg;
+                                                                if(festivalier.carryingFood())
+                                                                    tmpImg = FESTIVAL_GOER_WITH_FOOD_ICON.getImage();
+                                                                else if(festivalier.listeningConcert())
+                                                                {
+                                                                    if(festivalier.listeningState()==0)
+                                                                        tmpImg = FESTIVAL_GOER_ICON_2.getImage(); 
+                                                                    else
+                                                                        tmpImg = FESTIVAL_GOER_ICON.getImage(); 
+                                                                    
+                                                                }
+                                                                else 
+                                                                   tmpImg = FESTIVAL_GOER_ICON.getImage(); 
+                                                                
+								g2d.drawImage(tmpImg, trans, this);
 							}
 							else if(tmpData.getOwner() instanceof FestivalTrashMan)
 							{

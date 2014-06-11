@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.agent;
 
+import static fr.utbm.gi.vi51.project.agent.FestivalEntity.APPROCHER_SCENE;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.ECOUTER_CONCERT;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.LEAVE_EUROCKS;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.MARCHE_VERS_DESTINATION;
@@ -49,6 +50,9 @@ public class FestivalGoer extends FestivalEntity {
     private int _money;
     
     
+    private int _listeningState;
+    
+    
     
     public FestivalGoer() {
         super();
@@ -90,7 +94,7 @@ public class FestivalGoer extends FestivalEntity {
         JaakTimeManager jaakTimeManager = getJaakTimeManager();
         
         
-        if(_currentState == LEAVE_EUROCKS)
+        if(_currentState == LEAVE_EUROCKS) // Action la plus importante
         {
             moveToDestination();
             if(getPosition().x() > 158)
@@ -103,9 +107,7 @@ public class FestivalGoer extends FestivalEntity {
         _jaugeDeFaimActuelle += jaakTimeManager.getWaitingDuration();
         _jaugeDeVessieActuelle += jaakTimeManager.getWaitingDuration();
         
-        /*if(RandomUtils.getRand(100) > 95)
-         * dropOff(new Food(1,1,1));*/
-        
+
         
         if(!( _currentState == MARCHE_VERS_NOURRITURE || _currentState == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre
         {
@@ -140,6 +142,11 @@ public class FestivalGoer extends FestivalEntity {
             }
         }
         
+        
+        /*if(RandomUtils.getRand(100) > 95)
+         * dropOff(new Food(1,1,1));*/
+        
+        
         System.out.println(_currentState+" "+_currentConstructDestination+" "+_currentDestination+" "+getPosition()+" "+_currentPath);
         
         SoundSubstance soundSubs;
@@ -147,24 +154,38 @@ public class FestivalGoer extends FestivalEntity {
         
         switch(_currentState)
         {
-            case INIT:
+            case INIT: // State initial
                 goToAPlayingConcert();
                 // goTo(new Point2i(120,60));
                 break;
                 
-            case EN_ATTENTE:
-                //attendreSonTour(perception, _currentDestination);
-                break;
+            case APPROCHER_SCENE:
                 
-            case ECOUTER_CONCERT:
-                
-                if(_currentConstructDestination instanceof Scene)
+                if(getPosition().equals(_previousPosition))
+                {
+                    // On a atteint une place correcte
+                    _currentState = ECOUTER_CONCERT;
+                    
+                    break;
+                }
+                else if(_currentConstructDestination instanceof Scene)
                 {
                     Direction direct = ((Scene)_currentConstructDestination).getEmissionDirection().getOpposite();
                     Point2i relativePoint = direct.getOpposite().toRelativePoint();
                     setHeading(new Vector2f(relativePoint.getX(), relativePoint.getY()));
                     moveForward(1);
                 }
+                // Plus de son, on se casse voir ailleurs
+                soundSubs = touchUp(SoundSubstance.class);
+                if(soundSubs == null)
+                    goToAPlayingConcert();
+                break;
+                
+            case ECOUTER_CONCERT:
+                
+                _listeningState++;
+                if(_listeningState > 1)
+                    _listeningState = 0;
                 
                 soundSubs = touchUp(SoundSubstance.class);
                 if(soundSubs == null)
@@ -174,18 +195,18 @@ public class FestivalGoer extends FestivalEntity {
                 
             case MARCHE_VERS_CONCERT:
                 
-                
+                // Si on entends le son d'un concert, on se met en état d'écoute
                 soundSubs = touchUp(SoundSubstance.class);
                 if(soundSubs != null && soundSubs.getScene().equals(_currentConstructDestination)) //touchUpWithSemantic
                 {
-                    // System.out.println("TOUCHE SUBSTANCE "+_currentState+" "+touchUp.getScene()+" "+_currentConstructDestination);
-                    _currentState = ECOUTER_CONCERT;
+                    _currentState = APPROCHER_SCENE;
                     _currentPath = null;
                 }
                 
                 
                 if(_currentConstructDestination instanceof Scene)
                 {
+                    // Si notre scene objectif vient de voir son concert se terminer, on va ailleurs
                     if(!((Scene)_currentConstructDestination).getIsPlaying())
                         goToAPlayingConcert();
                 }
@@ -257,6 +278,11 @@ public class FestivalGoer extends FestivalEntity {
                 System.out.println("position : "+getPosition());
                 break;
         }
+        
+        
+        
+        
+        _previousPosition = getPosition();
     }
     
     
@@ -276,6 +302,14 @@ public class FestivalGoer extends FestivalEntity {
     
     public boolean carryingFood() {
         return this._nourriture != null;
+    }
+    
+    public boolean listeningConcert() {
+        return _currentState == ECOUTER_CONCERT;
+    }
+    
+    public int listeningState() { // pour créer une animation des bras
+        return _listeningState;
     }
     
     

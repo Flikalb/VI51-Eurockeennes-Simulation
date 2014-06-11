@@ -215,6 +215,9 @@ public class FestivalGoer extends FestivalEntity {
                     chooseToGoToARandomConcert();
                     
                     break;
+                    
+                default:
+                	break;
             }
 	}
 

@@ -24,7 +24,7 @@ public class Astar {
          
     }
      
-    public static ArrayList<Point2i> findPath(Point2i startPosition, Point2i endPosition) {
+    public static ArrayList<Point2i> findPath(Point2i startPosition, Point2i endPosition, int maxDepth) {
          
         if(!areCoordinatesAvailable(endPosition.x(),endPosition.y())) return null;
          
@@ -39,7 +39,8 @@ public class Astar {
          
         openList.add(startRecord);
          
-        while(!openList.isEmpty()) {
+        int depth=0;
+        while(depth<maxDepth && !openList.isEmpty()) {
              
             currentNode = getSmallestElement(openList);
             if (currentNode.getCoordinates()==endPosition) break;
@@ -84,12 +85,13 @@ public class Astar {
                  
                 openList.remove(currentNode);
                 closedList.add(currentNode);
+                depth++;
                  
             }
              
         }
          
-        if(currentNode.coordinates!=endPosition) {
+        if(currentNode.getConnection().getFromNode()==null) {
             return null;
         }
         else {
@@ -161,9 +163,8 @@ public class Astar {
          
         if(areCoordinatesAvailable(coordinates.x()-1,coordinates.y()-1)) {
             Point2i toNode = new Point2i(coordinates.x()-1,coordinates.y()-1);
-             
             Connection connection = new Connection(node,toNode);
-            connection.setCost(14);
+            connection.setCost(10);
             connections.add(connection);
         }
          
@@ -177,7 +178,7 @@ public class Astar {
         if(areCoordinatesAvailable(coordinates.x()-1,coordinates.y()+1)) {
             Point2i toNode = new Point2i(coordinates.x()-1,coordinates.y()+1);
             Connection connection = new Connection(node,toNode);
-            connection.setCost(14);
+            connection.setCost(10);
             connections.add(connection);
         }
          
@@ -198,7 +199,7 @@ public class Astar {
         if(areCoordinatesAvailable(coordinates.x()+1,coordinates.y()-1)) {
             Point2i toNode = new Point2i(coordinates.x()+1,coordinates.y()-1);
             Connection connection = new Connection(node,toNode);
-            connection.setCost(14);
+            connection.setCost(10);
             connections.add(connection);
         }
          
@@ -212,7 +213,7 @@ public class Astar {
         if(areCoordinatesAvailable(coordinates.x()+1,coordinates.y()+1)) {
             Point2i toNode = new Point2i(coordinates.x()+1,coordinates.y()+1);
             Connection connection = new Connection(node,toNode);
-            connection.setCost(14);
+            connection.setCost(10);
             connections.add(connection);
         }
          

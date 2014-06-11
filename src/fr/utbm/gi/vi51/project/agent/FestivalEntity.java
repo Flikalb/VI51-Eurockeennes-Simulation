@@ -32,7 +32,12 @@ public class FestivalEntity extends Turtle
     
     // ### DiffÃ©rent Ã©tats d'actions du festivalier
 
-    private static final SquareTurtleFrustum frus = new SquareTurtleFrustum(5000);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1164713901331040192L;
+
+	private static final SquareTurtleFrustum frus = new SquareTurtleFrustum(5000);
     
     public static final String INIT = "INIT";
     
@@ -109,8 +114,8 @@ public class FestivalEntity extends Turtle
     }
     
     protected void applyPathfinding() {
-        applySeek();
-        return;
+        //applySeek();
+        //return;
         // Lucie, implante ton A* ici :)
         
        /* Point2i endPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
@@ -119,6 +124,45 @@ public class FestivalEntity extends Turtle
         System.out.println(path);
         if(path != null)
             followPath(path);*/
+        Point2i endPosition = new Point2i(20,60);
+        System.out.println("endPosition "+endPosition+" "+this.getPosition());
+        ArrayList<Point2i> path = Astar.findPath(this.getPosition(), endPosition,10);
+        System.out.println("astar next step "+path.get(1));
+        Vector2f direction = new Vector2f();
+        direction.sub(path.get(1),this.getPosition());
+        direction.normalize();
+        this.setHeading(direction);
+        moveForward(1);
+        /*Point2i relativePoint = new Point2i(this.getPosition().getX()-path.get(1).getX(),this.getPosition().getY()-path.get(1).getY());
+        Direction d = Direction.getSens(relativePoint);
+        switch(d) {
+        case NORTH:
+        	move(0,-1,true);
+        	break;
+        case SOUTH:
+        	move(0,1,true);
+        	break;
+        case EAST:
+        	move(1,0,true);
+        	break;
+        case WEST:
+        	move(-1,0,true);
+        	break;
+        case NORTHWEST:
+        	move(-1,-1,true);
+        	break;
+        case NORTHEAST:
+        	move(1,-1,true);
+        	break;
+        case SOUTHEAST:
+        	move(1,1,true);
+        	break;
+        case SOUTHWEST:
+        	move(-1,1,true);
+        	break;
+        default:
+        	break;
+        }*/
         
         
     }
@@ -135,7 +179,7 @@ public class FestivalEntity extends Turtle
     			{ 
     				ObstacleScene temp= (ObstacleScene)p;
     				//System.out.print(p.getPosition());
-    					// C'est ici qu'il faut mettre les arbres de décision relatifs aux décisions 
+    					// C'est ici qu'il faut mettre les arbres de dï¿½cision relatifs aux dï¿½cisions 
     					// concernant les concerts
     				
     				

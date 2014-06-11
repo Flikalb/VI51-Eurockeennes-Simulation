@@ -8,14 +8,19 @@ package fr.utbm.gi.vi51.project.agent;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
 import fr.utbm.gi.vi51.project.environment.Scene;
+import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
 import fr.utbm.gi.vi51.project.utils.Astar;
 import fr.utbm.gi.vi51.project.utils.RandomUtils;
+
 import java.util.ArrayList;
+
 import org.arakhne.afc.math.continous.object2d.Vector2f;
 import org.arakhne.afc.math.discrete.object2d.Point2i;
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
+import org.janusproject.jaak.envinterface.frustum.SquareTurtleFrustum;
 import org.janusproject.jaak.envinterface.influence.MotionInfluenceStatus;
+import org.janusproject.jaak.envinterface.perception.EnvironmentalObject;
 import org.janusproject.jaak.turtle.Turtle;
 
 /**
@@ -26,6 +31,8 @@ public class FestivalEntity extends Turtle
 {
     
     // ### Différent états d'actions du festivalier
+
+    private static final SquareTurtleFrustum frus = new SquareTurtleFrustum(5000);
     
     public static final String INIT = "INIT";
     
@@ -73,7 +80,7 @@ public class FestivalEntity extends Turtle
     
     @Override
     protected TurtleBody createTurtleBody(TurtleBodyFactory factory) {
-        TurtleBody turtleBody = factory.createTurtleBody(getAddress());
+        TurtleBody turtleBody = factory.createTurtleBody(getAddress(),frus);
         turtleBody.setSemantic(_informationsTurtle);
         
         return turtleBody;
@@ -117,14 +124,47 @@ public class FestivalEntity extends Turtle
     }
     
     protected void applySeek() {
+    	
+    	
+    	/*Point2i seekPosition = new Point2i();
+    	//for(EnvironmentalObject p : getPerceivedObjects()) {
+    	for(EnvironmentalObject p : getPerceivedObjects()) 
+    	{
+    		
+    			if(p instanceof ObstacleScene)
+    			{ 
+    				ObstacleScene temp= (ObstacleScene)p;
+    				//System.out.print(p.getPosition());
+    					// C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions 
+    					// concernant les concerts
+    				
+    				
+    					
+    						if(temp.getScene().getisplaying())
+    						{
+    							seekPosition=(temp.getScene().getEmissionPosition());
+    							//System.out.println(seekPosition.toString()); debug
+    							break;
+    						}
+    			}
+		}
+    	*/ 
+    	
+    	// COYOTE, VOICI LA METHODE PERMETTANT DE RECUPERER L ACTIVItE D UN CONCERT DONNE
+    	// TU PEUX M EXPLIQUER A L OCASSE CE QUE T AS FAIT? J AI DU MAL A PERCUTER :)
+    	// BISOUS
 
         Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
         
         System.out.println("seekPosition : "+seekPosition);
+       
+        
+        
+        
         // A VOIR ICI POUR TRUQUER LE SEEK POUR EVITER LES OBSTACLES
         // Le précédent seek a été un gros fail
-       /* MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
+        MotionInfluenceStatus lastMotionInfluenceStatus = getLastMotionInfluenceStatus();
         if(lastMotionInfluenceStatus != null && lastMotionInfluenceStatus.isFailure())
         {
             _nbFailMoves++;
@@ -142,17 +182,18 @@ public class FestivalEntity extends Turtle
             
         }
         else
-            _nbFailMoves = 0;*/
+            _nbFailMoves = 0;
         
        
-        
-        if(!seekPosition.equals(position)) {
+    	if(!seekPosition.equals(position)) {
             Vector2f direction = new Vector2f();
             direction.sub(seekPosition, position);
             direction.normalize();
             this.setHeading(direction);
             moveForward(1);
         }
+        
+        
          
     }
     

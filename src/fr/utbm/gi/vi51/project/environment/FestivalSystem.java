@@ -54,9 +54,9 @@ public class FestivalSystem {
             _festivalMap = new FestivalMap();
             
             
-	    Scene GrandeScene = new Scene( 0,  40,  20,  80,  19,  60,20,  ap, Direction.EAST);
-	    Scene GreenHouse = new Scene( 60,  5,  80,  35,  79,  20,15,  ap, Direction.EAST);
-	    Scene Plage = new Scene( 120,  50,  130,  70,  120,  60,10,  ap, Direction.WEST);
+	    Scene GrandeScene = new Scene( 0,  40,  20,  80,  19,  60,20,  ap, Direction.EAST,false,1);
+	    Scene GreenHouse = new Scene( 60,  5,  80,  35,  79,  20,15,  ap, Direction.EAST,false,2);
+	    Scene Plage = new Scene( 120,  50,  130,  70,  120,  60,10,  ap, Direction.WEST,false,3);
             
             _festivalMap.addConstruction(GrandeScene);
             _festivalMap.addConstruction(GreenHouse);
@@ -170,4 +170,67 @@ public class FestivalSystem {
             astar = new Astar(channel);
 	    return new FestivalPanel(channel, environment);
 	}
+	
+	public static class MyThread extends Thread 
+	{
+
+	    Scene GrandeScene;
+	    Scene GreenHouse;
+	    Scene Plage;
+	    
+		   public MyThread(Scene green, Scene gd, Scene plage) {
+			   Scene GrandeScene=gd;
+			   Scene GreenHouse=green;
+			   Scene Plage=plage;
+		   }
+
+		   public void run() {
+			   
+			   long time = System.currentTimeMillis() / 1000;
+			   
+			   long timemod = System.currentTimeMillis() / 1000;
+			   
+			   while(true)
+			   {
+				   timemod = System.currentTimeMillis() / 1000;
+				   if(timemod-time<120)
+				   {
+					   Plage.isplaying=false;
+					   if(GrandeScene.isplaying==false)
+					   {
+						   System.out.println("Concert à la Grande Scene (Scene de gauche)");
+					   }
+					   GrandeScene.isplaying=true;
+					  
+				   }
+				   else if(timemod-time<240)
+				   {
+					   GrandeScene.isplaying=false;
+					   if(GreenHouse.isplaying==false)
+					   {
+						   System.out.println("Concert à la GreenHouse (Scene centrale)");
+					   }
+					   GreenHouse.isplaying=true;
+				   }
+				   else if(timemod-time<360)
+				   {
+					   GreenHouse.isplaying=false;
+					   if(Plage.isplaying==false)
+					   {
+						   System.out.println("Concert à la Plage (Scene en bas à gauche)");
+					   }
+					   Plage.isplaying=true;
+				   }
+				   else
+				   {
+					   time = System.currentTimeMillis() / 1000;
+				   }
+				   
+			   }
+			   
+				   
+			   
+			   
+		   }
+		}
 }

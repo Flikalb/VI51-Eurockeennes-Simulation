@@ -8,12 +8,16 @@ import fr.utbm.gi.vi51.project.environment.Scene;
 import fr.utbm.gi.vi51.project.environment.WaterClosed;
 import fr.utbm.gi.vi51.project.environment.food.Food;
 import fr.utbm.gi.vi51.project.utils.Astar;
+
 import org.janusproject.jaak.envinterface.body.TurtleBody;
 import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
+import org.janusproject.jaak.envinterface.frustum.SquareTurtleFrustum;
 
 import fr.utbm.gi.vi51.project.utils.RandomUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.arakhne.afc.math.continous.object2d.Vector2f;
 import org.arakhne.afc.math.discrete.object2d.Point2i;
 import org.janusproject.jaak.envinterface.perception.Perceivable;
@@ -28,7 +32,6 @@ public class FestivalGoer extends FestivalEntity {
 	 */
 	private static final long serialVersionUID = -5328824872764860436L;
         private static int i = 0;
-        
         
         
         private long _jaugeDeFaimTotale; // Durée au bout de laquelle le joueur a faim en ms

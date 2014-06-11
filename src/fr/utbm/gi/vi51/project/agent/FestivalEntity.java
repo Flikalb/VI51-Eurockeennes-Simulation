@@ -64,6 +64,8 @@ public class FestivalEntity extends Turtle
     public static final String MANGER = "MANGER"; //
     public static final String FAIRE_SES_BESOINS = "FAIRE_SES_BESOINS"; //
     public static final String ECOUTER_CONCERT = "ECOUTER_CONCERT"; //
+    
+    public static final String LEAVE_EUROCKS = "LEAVE_EUROCKS"; 
     // ### END
     
     
@@ -86,6 +88,8 @@ public class FestivalEntity extends Turtle
     
     public FestivalEntity() {
         super();
+        //System.out.println("suicide : "+canCommitSuicide());
+        setCommitSuicide(true);
         
         _currentState = WANDERING;
         
@@ -124,6 +128,7 @@ public class FestivalEntity extends Turtle
     protected void moveToDestination() {
         
         Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
+        if(seekPosition == null) return;
         float distance = seekPosition.distance(getPosition());
         //System.out.println("rel : "+distance+" "+seekPosition+" "+getPosition());
         if(distance == 1.0) // Arrive sur l'objectif
@@ -355,16 +360,28 @@ public class FestivalEntity extends Turtle
         _currentConstructDestination = _carteFestival.getPlayingConcerts();
         if(_currentConstructDestination != null)
             _currentState = MARCHE_VERS_CONCERT;
+        else
+            leaveEurocks();
     }
     
      protected void goTo(Point2i destination) {
          _currentState = MARCHE_VERS_DESTINATION;
          _currentDestination = destination;
     }
+     
+     protected void leaveEurocks() {
+         _currentState = LEAVE_EUROCKS;
+         _currentDestination = new Point2i(159,16);
+    }
     
     
     public void setCarteFestival(FestivalMap _carteFestival) {
         this._carteFestival = _carteFestival;
+    }
+    
+    
+    public void kill() {
+         killMe();
     }
     
 }

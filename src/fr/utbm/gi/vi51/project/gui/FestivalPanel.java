@@ -1,5 +1,6 @@
 package fr.utbm.gi.vi51.project.gui;
 
+import fr.utbm.gi.vi51.project.agent.FestivalEntity;
 import fr.utbm.gi.vi51.project.agent.FestivalGoer;
 import fr.utbm.gi.vi51.project.agent.FestivalTrashMan;
 import fr.utbm.gi.vi51.project.agent.TurtleSemantic;
@@ -16,6 +17,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
@@ -32,6 +35,7 @@ import org.janusproject.jaak.envinterface.perception.Obstacle;
 import org.janusproject.jaak.environment.model.JaakEnvironment;
 import org.janusproject.jaak.environment.model.RealTurtleBody;
 import org.janusproject.jaak.turtle.Turtle;
+import org.janusproject.kernel.agent.Agent;
 
 public class FestivalPanel extends JPanel implements GridStateChannelListener 
 {
@@ -59,7 +63,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 	private int height;
 
 	private final GridStateChannel channel;
-	private final JaakEnvironment environment;
+	private final JaakEnvironment _environment;
 
 
 	public FestivalPanel(GridStateChannel channel, JaakEnvironment environment) {
@@ -68,7 +72,28 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 		this.channel.addGridStateChannelListener(this);
 		this.width = this.channel.getGridWidth();
 		this.height=this.channel.getGridHeight();
-		this.environment = environment;
+		this._environment = environment;
+                
+                
+                this.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("CLICK "+e.getX()/CELL_SIZE+" "+e.getY()/CELL_SIZE);
+                    
+                   /* Collection<TurtleBody> turtles = _environment.getTurtles(e.getX()/CELL_SIZE, e.getY()/CELL_SIZE);
+                    for(TurtleBody turtle : turtles)
+                    {
+                        FestivalEntity tmpTurtle = (FestivalEntity) ((TurtleSemantic)turtle.getSemantic()).getOwner();
+                        tmpTurtle.kill();
+                    }*/
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+            });
+                
 	}
 
 	public GridStateChannel getChannel() {
@@ -91,6 +116,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 	@Override
 	public void jaakStart() {
 		repaint();
+
 	}
 
 	private static int simu2screen_x(int x) {
@@ -185,7 +211,7 @@ public class FestivalPanel extends JPanel implements GridStateChannelListener
 					trans.translate(simu2screen_x(x), simu2screen_y(y)); // On la positionne au bon endroit x,y
 					trans.rotate( this.channel.getOrientation(x, y)+Math.PI/2 ); // Et on l'oriente dans son sens de marche
 
-					Collection<TurtleBody> turtles = environment.getTurtles(x, y);
+					Collection<TurtleBody> turtles = _environment.getTurtles(x, y);
 					for(TurtleBody tmpBody : turtles)
 					{
 						TurtleSemantic tmpData = (TurtleSemantic)tmpBody.getSemantic();

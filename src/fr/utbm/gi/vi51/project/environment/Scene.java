@@ -155,5 +155,9 @@ public class Scene extends Construction {
     {
         return new Point2i(Xci,Yci);
     }
+
+    public Direction getEmissionDirection() {
+       return direction;
+    }
     
 }

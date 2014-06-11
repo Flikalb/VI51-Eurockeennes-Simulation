@@ -23,7 +23,7 @@ public class FestivalSystem {
     private static final boolean isWrappedEnvironment = false;
     
     //Maximal number of festival goers.
-    private static final int FESTIVAL_GOER_COUNT = 1;
+    private static final int FESTIVAL_GOER_COUNT = 1000;
     
     //Width of the spawn area.
     private static final int SPAWN_WIDTH = 10;
@@ -201,12 +201,15 @@ public class FestivalSystem {
             
             long time = System.currentTimeMillis() / 1000;
             
-            long timemod = System.currentTimeMillis() / 1000;
+            long timemod;
+            
+            long diffTime;
             
             while(true)
             {
                 timemod = System.currentTimeMillis() / 1000;
-                if(timemod-time<10)
+                diffTime = timemod-time;
+                if(diffTime<20)
                 {
                     if(!GrandeScene.getIsPlaying())
                     {
@@ -218,7 +221,7 @@ public class FestivalSystem {
                     
                     
                 }
-                else if(timemod-time<26)
+                else if(diffTime<36)
                 {
                     if(!GreenHouse.getIsPlaying())
                     {
@@ -227,7 +230,7 @@ public class FestivalSystem {
                         System.out.println("Concert a la GreenHouse (Scene centrale)");
                     }
                 }
-                else if(timemod-time<40)
+                else if(diffTime<60)
                 {
                     if(!Plage.getIsPlaying())
                     {
@@ -236,8 +239,17 @@ public class FestivalSystem {
                         System.out.println("Concert a la Plage (Scene en bas a gauche)");
                     }
                 }
+                else if(diffTime < 120)
+                {
+                    GrandeScene.setIsPlaying(false);
+                    GreenHouse.setIsPlaying(false);
+                    Plage.setIsPlaying(false);
+                    this.stop();
+                    return;
+                }
                 else
                 {
+                    
                     time = System.currentTimeMillis() / 1000;
                 }
                 

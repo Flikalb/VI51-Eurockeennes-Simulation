@@ -70,7 +70,9 @@ public class FestivalEntity extends Turtle
     public static final String ARRIVED_ON_OBJECTIVE = "ARRIVED_ON_OBJECTIVE"; //
     
     
-    public static final String LEAVE_EUROCKS = "LEAVE_EUROCKS"; 
+    public static final String RUN_AWAY = "RUN_AWAY";
+    
+    public static final String LEAVE_EUROCKS = "LEAVE_EUROCKS";
     // ### END
     
     
@@ -170,7 +172,7 @@ public class FestivalEntity extends Turtle
         {
             //System.out.println("On est bloqué :(");
             Point2i endPosition = seekPosition;
-           // System.out.println("endPosition "+endPosition+" "+this.getPosition());
+            // System.out.println("endPosition "+endPosition+" "+this.getPosition());
             _currentPath = Astar.findPath(this.getPosition(), endPosition, 100);
             if(_currentPath != null && _currentPath.size() > 0)
                 _currentPath.remove(0);
@@ -180,7 +182,7 @@ public class FestivalEntity extends Turtle
         
         
         
-        _previousPosition = getPosition(); 
+        _previousPosition = getPosition();
         
     }
     
@@ -195,35 +197,35 @@ public class FestivalEntity extends Turtle
             direction.normalize();
             this.setHeading(direction);
             moveForward(1);
-        } 
+        }
         
     }
     
     
     /*Point2i seekPosition = new Point2i();
-         * //for(EnvironmentalObject p : getPerceivedObjects()) {
-         * for(EnvironmentalObject p : getPerceivedObjects())
-         * {
-         * 
-         * if(p instanceof ObstacleScene)
-         * {
-         * ObstacleScene temp= (ObstacleScene)p;
-         * //System.out.print(p.getPosition());
-         * // C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions
-         * // concernant les concerts
-         * 
-         * 
-         * 
-         * if(temp.getScene().getisplaying())
-         * {
-         * seekPosition=(temp.getScene().getEmissionPosition());
-         * //System.out.println(seekPosition.toString()); debug
-         * break;
-         * }
-         * }
-         * }
-         */
-        
+     * //for(EnvironmentalObject p : getPerceivedObjects()) {
+     * for(EnvironmentalObject p : getPerceivedObjects())
+     * {
+     *
+     * if(p instanceof ObstacleScene)
+     * {
+     * ObstacleScene temp= (ObstacleScene)p;
+     * //System.out.print(p.getPosition());
+     * // C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions
+     * // concernant les concerts
+     *
+     *
+     *
+     * if(temp.getScene().getisplaying())
+     * {
+     * seekPosition=(temp.getScene().getEmissionPosition());
+     * //System.out.println(seekPosition.toString()); debug
+     * break;
+     * }
+     * }
+     * }
+     */
+    
     
     
     
@@ -244,6 +246,19 @@ public class FestivalEntity extends Turtle
     }
     
     
+    protected void runAway() {
+        
+        Vector2f direction = new Vector2f();
+        direction.sub(_currentDestination,this.getPosition());
+        if(direction.length()<10) {
+            applyFlee();
+        }
+        else {
+            leaveEurocks();
+        }
+    }
+    
+    
     protected void gotoNextNodeInPath() {
         if(_currentPath == null || _currentPath.size() == 0)
             return;
@@ -259,14 +274,14 @@ public class FestivalEntity extends Turtle
     
     
     /*protected void followPath(ArrayList<Point2i> path) {
-        for(Point2i p : path) {
-            Vector2f direction = new Vector2f();
-            direction.sub(p,this.getPosition());
-            direction.normalize();
-            this.setHeading(direction);
-            moveForward(1);
-        }
-    }*/
+     * for(Point2i p : path) {
+     * Vector2f direction = new Vector2f();
+     * direction.sub(p,this.getPosition());
+     * direction.normalize();
+     * this.setHeading(direction);
+     * moveForward(1);
+     * }
+     * }*/
     
     
     protected boolean arrived() {
@@ -300,14 +315,14 @@ public class FestivalEntity extends Turtle
             leaveEurocks();
     }
     
-     protected void goTo(Point2i destination) {
-         _currentState = MARCHE_VERS_DESTINATION;
-         _currentDestination = destination;
+    protected void goTo(Point2i destination) {
+        _currentState = MARCHE_VERS_DESTINATION;
+        _currentDestination = destination;
     }
-     
-     protected void leaveEurocks() {
-         _currentState = LEAVE_EUROCKS;
-         _currentDestination = new Point2i(159,16);
+    
+    protected void leaveEurocks() {
+        _currentState = LEAVE_EUROCKS;
+        _currentDestination = new Point2i(159,16);
     }
     
     
@@ -317,7 +332,7 @@ public class FestivalEntity extends Turtle
     
     
     public void kill() {
-         killMe();
+        killMe();
     }
     
 }

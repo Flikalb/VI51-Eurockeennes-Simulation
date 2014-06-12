@@ -7,6 +7,7 @@ import static fr.utbm.gi.vi51.project.agent.FestivalEntity.MARCHE_VERS_DESTINATI
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.WANDERING;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
+import fr.utbm.gi.vi51.project.environment.FireSubstance;
 import fr.utbm.gi.vi51.project.environment.PumpRoom;
 import fr.utbm.gi.vi51.project.environment.Scene;
 import fr.utbm.gi.vi51.project.environment.SoundSubstance;
@@ -29,6 +30,8 @@ import org.janusproject.jaak.envinterface.perception.Perceivable;
 import org.janusproject.jaak.envinterface.perception.PerceivedTurtle;
 import org.janusproject.jaak.envinterface.time.JaakTimeManager;
 import org.janusproject.jaak.turtle.Turtle;
+import org.janusproject.kernel.message.Message;
+import org.janusproject.kernel.message.ObjectMessage;
 
 public class FestivalGoer extends FestivalEntity {
     
@@ -92,6 +95,46 @@ public class FestivalGoer extends FestivalEntity {
         Collection<Perceivable> perception = getPerception();
         
         JaakTimeManager jaakTimeManager = getJaakTimeManager();
+        
+        
+        Message m = this.getMessage();
+        if(m instanceof ObjectMessage) {
+        	if(((ObjectMessage)m).getContent() instanceof Point2i) {
+        		this._currentDestination=((Point2i)((ObjectMessage)m).getContent());
+        		_currentState = RUN_AWAY;
+        	}
+        }
+        
+        for(Perceivable p : perception) {
+        	if(p.isSubstance()) {
+        		if(p instanceof FireSubstance) {
+        			this._currentDestination=p.getPosition();
+        			_currentState = RUN_AWAY;
+        		}
+        	}
+        		
+        }
+        
+        if(_currentState == RUN_AWAY) {
+        	for(Perceivable p : perception) {
+        		//on vérifie que l'on ne détecte pas d'autres feux
+        		if(p instanceof FireSubstance) {
+        			_currentDestination = p.getPosition();
+        		}
+        		//on prévient les agents que l'on fuit
+        		if (p.isTurtle()) {
+        			TurtleSemantic t = (TurtleSemantic)p.getSemantic();
+        			this.forwardMessage(new ObjectMessage(this._currentDestination),t.getOwner().getAddress());
+        		}
+        	}
+        	
+        	runAway();
+        	return;
+         }
+        
+        
+        
+        
         
         if(_currentState == LEAVE_EUROCKS) // Action la plus importante
         {  

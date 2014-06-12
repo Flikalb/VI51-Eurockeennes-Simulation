@@ -55,7 +55,7 @@ public class FestivalTrashMan extends FestivalEntity {
         super();
         _informationsTurtle = new TurtleSemantic(this);
         _frustum = new SquareTurtleFrustum(10);
-        _currentState = INIT;
+        changeCurrentState(INIT);
     }
     
     @Override
@@ -75,6 +75,10 @@ public class FestivalTrashMan extends FestivalEntity {
         _timeSincePreviousAction += jaakTimeManager.getWaitingDuration();
         
         
+        _isOnSamePosition = getPosition().equals(_previousPosition);
+        _previousPosition = getPosition();
+        if(checkFailMove()) return;
+        
        // System.out.println(""+getPosition());
         
         Collection<Perceivable> perception = getPerception();
@@ -84,11 +88,11 @@ public class FestivalTrashMan extends FestivalEntity {
         if(m instanceof ObjectMessage) {
         	if(((ObjectMessage)m).getContent() instanceof Point2i) {
         		this._currentDestination=((Point2i)((ObjectMessage)m).getContent());
-        		_currentState = RUN_AWAY;
+        		changeCurrentState(RUN_AWAY);
         	}
         }
 
-		if(_currentState==RUN_AWAY) {
+		if(getCurrentState()==RUN_AWAY) {
 			//on prévient les agents que l'on fuit
 			for(Perceivable p : perception) {
 				if (p.isTurtle()) {
@@ -110,7 +114,7 @@ public class FestivalTrashMan extends FestivalEntity {
                     {
                         System.out.println("FOOOOD  "+tmpObj+" "+tmpObj.getPosition());
                         _trashFounded = (Food)tmpObj;
-                        _currentState = MARCHE_VERS_DECHET;
+                        changeCurrentState(MARCHE_VERS_DECHET);
                         _currentDestination = _trashFounded.getPosition();
                         _currentConstructDestination = null;
                     }
@@ -137,7 +141,7 @@ public class FestivalTrashMan extends FestivalEntity {
         }
         //System.out.println("state : "+_currentState);
         
-        switch(_currentState)
+        switch(getCurrentState())
         {
             case INIT:
                 chooseToGoToARandomDestination();
@@ -150,7 +154,7 @@ public class FestivalTrashMan extends FestivalEntity {
                 if(_timeSincePreviousAction > 10*1000)
                 {
                     _timeSincePreviousAction = 0;
-                    _currentState = WANDERING;
+                    changeCurrentState(WANDERING);
                 }
                 
              case MARCHE_VERS_DECHET:    

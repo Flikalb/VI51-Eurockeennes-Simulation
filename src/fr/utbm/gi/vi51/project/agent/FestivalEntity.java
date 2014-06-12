@@ -76,12 +76,13 @@ public class FestivalEntity extends Turtle
     // ### END
     
     
-    protected String _currentState = "";
+    private String _currentState = "";
     protected Point2i _currentDestination;
     protected Construction _currentConstructDestination;
     protected ArrayList<Point2i> _currentPath;
     
     protected Point2i _previousPosition;
+    protected boolean _isOnSamePosition;
     
     protected FestivalMap _carteFestival;
     
@@ -91,14 +92,14 @@ public class FestivalEntity extends Turtle
     protected SquareTurtleFrustum _frustum;
     
     
-    private int _nbFailMoves = 0;
+    protected int _nbFailMoves = 0;
     
     public FestivalEntity() {
         super();
         //System.out.println("suicide : "+canCommitSuicide());
         setCommitSuicide(true);
         _informationsTurtle = new TurtleSemantic(this);
-        _currentState = WANDERING;
+        changeCurrentState(WANDERING);
         
     }
     
@@ -110,8 +111,25 @@ public class FestivalEntity extends Turtle
         
         return turtleBody;
     }
-    protected boolean hasReachedDestination() {
-        return this.getPosition().equals( _currentDestination);
+    
+    
+    
+    public void changeCurrentState(String state, boolean removeDestinations) {
+       _currentState = state;
+       if(removeDestinations)
+       {
+            _currentPath = null;
+            _currentConstructDestination = null;
+            _currentDestination = null; 
+       }
+    }
+    public void changeCurrentState(String state) {
+        changeCurrentState(state, true);
+    }
+    
+    
+     public String getCurrentState() {
+        return _currentState;
     }
     
     
@@ -135,6 +153,7 @@ public class FestivalEntity extends Turtle
     
     protected void moveToDestination() {
         
+        
         Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         if(seekPosition == null) return;
         float distance = seekPosition.distance(getPosition());
@@ -145,9 +164,8 @@ public class FestivalEntity extends Turtle
             System.out.println("OK DISTANCE "+relativePoint);
             move(relativePoint.getX(), relativePoint.getY(), true);
             
-            _currentState = ARRIVED_ON_OBJECTIVE;
+            changeCurrentState(ARRIVED_ON_OBJECTIVE);
             
-            _previousPosition = getPosition();
             return;
         }
         
@@ -162,27 +180,20 @@ public class FestivalEntity extends Turtle
         if(_currentPath != null)
         {
             gotoNextNodeInPath(); // On le suit
-            _previousPosition = getPosition();
             return;
         }
         
         applySeek(); // Sinon on seek jusqu'à ce que l'on soit bloqué
         
-        if(getPosition().equals(_previousPosition))
+        if(_isOnSamePosition)
         {
             //System.out.println("On est bloqué :(");
             Point2i endPosition = seekPosition;
-            // System.out.println("endPosition "+endPosition+" "+this.getPosition());
             _currentPath = Astar.findPath(this.getPosition(), endPosition, 100);
             if(_currentPath != null && _currentPath.size() > 0)
                 _currentPath.remove(0);
-            //System.out.println("astar next step "+_currentPath);
             
         }
-        
-        
-        
-        _previousPosition = getPosition();
         
     }
     
@@ -191,7 +202,7 @@ public class FestivalEntity extends Turtle
         Point2i seekPosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
         
-        if(!seekPosition.equals(position)) {
+        if(seekPosition != null && !position.equals(seekPosition)) {
             Vector2f direction = new Vector2f();
             direction.sub(seekPosition, position);
             direction.normalize();
@@ -202,31 +213,29 @@ public class FestivalEntity extends Turtle
     }
     
     
-    /*Point2i seekPosition = new Point2i();
-     * //for(EnvironmentalObject p : getPerceivedObjects()) {
-     * for(EnvironmentalObject p : getPerceivedObjects())
-     * {
-     *
-     * if(p instanceof ObstacleScene)
-     * {
-     * ObstacleScene temp= (ObstacleScene)p;
-     * //System.out.print(p.getPosition());
-     * // C'est ici qu'il faut mettre les arbres de d�cision relatifs aux d�cisions
-     * // concernant les concerts
-     *
-     *
-     *
-     * if(temp.getScene().getisplaying())
-     * {
-     * seekPosition=(temp.getScene().getEmissionPosition());
-     * //System.out.println(seekPosition.toString()); debug
-     * break;
-     * }
-     * }
-     * }
-     */
     
     
+    protected boolean checkFailMove()
+    {
+        if(_isOnSamePosition)
+            _nbFailMoves++;
+        else
+            _nbFailMoves = 0;
+        if(_nbFailMoves > 20)
+        {
+            goToAPlayingConcert();
+            return true;
+        }
+        if(_nbFailMoves > 10)
+        {
+            Direction randomDir = Direction.getRandom();
+            //System.out.println("Je suis bloqué :'("+randomDir.toString());
+            setHeading(randomDir.toFloat());
+            moveForward(1);
+            return true;
+        }
+        return false;
+    }
     
     
     
@@ -235,7 +244,7 @@ public class FestivalEntity extends Turtle
         
         Point2i fleePosition = (_currentConstructDestination == null)? _currentDestination:_currentConstructDestination.getInteractCenter();
         Point2i position = this.getPosition();
-        if(!fleePosition.equals(position)) {
+        if(fleePosition != null && !position.equals(fleePosition)) {
             Vector2f direction = new Vector2f();
             direction.sub(position, fleePosition);
             direction.normalize();
@@ -248,7 +257,15 @@ public class FestivalEntity extends Turtle
     
     protected void runAway() {
         
+        
+        applyFlee();
         Vector2f direction = new Vector2f();
+        if(_currentDestination == null)
+        {
+            //System.out.println("fail");
+            leaveEurocks();
+            return ;
+        }
         direction.sub(_currentDestination,this.getPosition());
         if(direction.length()<10) {
             applyFlee();
@@ -256,6 +273,7 @@ public class FestivalEntity extends Turtle
         else {
             leaveEurocks();
         }
+        
     }
     
     
@@ -316,12 +334,12 @@ public class FestivalEntity extends Turtle
     }
     
     protected void goTo(Point2i destination) {
-        _currentState = MARCHE_VERS_DESTINATION;
+        changeCurrentState(MARCHE_VERS_DESTINATION);
         _currentDestination = destination;
     }
     
     protected void leaveEurocks() {
-        _currentState = LEAVE_EUROCKS;
+        changeCurrentState(LEAVE_EUROCKS);
         _currentDestination = new Point2i(159,16);
     }
     

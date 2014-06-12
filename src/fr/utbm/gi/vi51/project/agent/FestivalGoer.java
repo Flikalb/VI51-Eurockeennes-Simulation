@@ -4,6 +4,7 @@ import static fr.utbm.gi.vi51.project.agent.FestivalEntity.APPROCHER_SCENE;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.ECOUTER_CONCERT;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.LEAVE_EUROCKS;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.MARCHE_VERS_DESTINATION;
+import static fr.utbm.gi.vi51.project.agent.FestivalEntity.RUN_AWAY;
 import static fr.utbm.gi.vi51.project.agent.FestivalEntity.WANDERING;
 import fr.utbm.gi.vi51.project.environment.Construction;
 import fr.utbm.gi.vi51.project.environment.FestivalMap;
@@ -20,6 +21,7 @@ import org.janusproject.jaak.envinterface.body.TurtleBodyFactory;
 import org.janusproject.jaak.envinterface.frustum.SquareTurtleFrustum;
 
 import fr.utbm.gi.vi51.project.utils.RandomUtils;
+import java.awt.List;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +65,7 @@ public class FestivalGoer extends FestivalEntity {
         
         _money = RandomUtils.getRand(0, 100);
         
-        _currentState = INIT;
+        changeCurrentState(INIT);
         
         _jaugeDeFaimTotale = RandomUtils.getRand(1*10*1000, 1*100*1000);
         _jaugeDeFaimActuelle = 0;
@@ -91,75 +93,89 @@ public class FestivalGoer extends FestivalEntity {
     @Override
     protected void turtleBehavior() {
         /**/
-        
         Collection<Perceivable> perception = getPerception();
         
         JaakTimeManager jaakTimeManager = getJaakTimeManager();
         
         
-        Message m = this.getMessage();
+        
+        _isOnSamePosition = getPosition().equals(_previousPosition);
+        _previousPosition = getPosition();
+        if(getCurrentState() != ECOUTER_CONCERT)
+            if(checkFailMove()) return;
+        
+        //System.out.println("currentState "+getCurrentState()+" "+getPosition()+" "+_isOnSamePosition);
+        
+        if(getPosition().x() > 157)
+        {
+            System.out.println("kill me");
+            killMe();
+        }
+        
+        Message m = this.getMessage(); // Voit quelqu'un qui fuit
         if(m instanceof ObjectMessage) {
-        	if(((ObjectMessage)m).getContent() instanceof Point2i) {
-        		this._currentDestination=((Point2i)((ObjectMessage)m).getContent());
-        		_currentState = RUN_AWAY;
-        	}
+            if(((ObjectMessage)m).getContent() instanceof Point2i) {
+                changeCurrentState(RUN_AWAY);
+                this._currentDestination=((Point2i)((ObjectMessage)m).getContent());
+                
+            }
         }
         
         for(Perceivable p : perception) {
-        	if(p.isSubstance()) {
-        		if(p instanceof FireSubstance) {
-        			this._currentDestination=p.getPosition();
-        			_currentState = RUN_AWAY;
-        		}
-        	}
-        		
+            if(p.isSubstance()) {
+                if(p instanceof FireSubstance) {
+                    changeCurrentState(RUN_AWAY);
+                    this._currentDestination=p.getPosition();
+                    
+                }
+            }
+            
         }
         
-        if(_currentState == RUN_AWAY) {
-        	for(Perceivable p : perception) {
-        		//on vérifie que l'on ne détecte pas d'autres feux
-        		if(p instanceof FireSubstance) {
-        			_currentDestination = p.getPosition();
-        		}
-        		//on prévient les agents que l'on fuit
-        		if (p.isTurtle()) {
-        			TurtleSemantic t = (TurtleSemantic)p.getSemantic();
-        			this.forwardMessage(new ObjectMessage(this._currentDestination),t.getOwner().getAddress());
-        		}
-        	}
-        	
-        	runAway();
-        	return;
-         }
-        
-        
-        
-        
-        
-        if(_currentState == LEAVE_EUROCKS) // Action la plus importante
-        {  
-            moveToDestination();
-            
-            if(getPosition().x() > 157)
-            {
-                killMe();
+        if(getCurrentState() == RUN_AWAY) {
+            for(Perceivable p : perception) {
+                //on vérifie que l'on ne détecte pas d'autres feux
+                if(p instanceof FireSubstance) {
+                    _currentDestination = p.getPosition();
+                }
+                //on prévient les agents que l'on fuit
+                if (p.isTurtle()) {
+                    TurtleSemantic t = (TurtleSemantic)p.getSemantic();
+                    this.forwardMessage(new ObjectMessage(this._currentDestination),t.getOwner().getAddress());
+                }
             }
+            
+            runAway();
             return;
         }
+        
+        
+        if(getCurrentState() == LEAVE_EUROCKS) // Action la plus importante
+        {
+            System.out.println("LEAVE "+_currentDestination);
+            moveToDestination();
+            return;
+        }
+        
+        
+        
+        
+        
+        
         
         
         
         _jaugeDeFaimActuelle += jaakTimeManager.getWaitingDuration();
         _jaugeDeVessieActuelle += jaakTimeManager.getWaitingDuration();
         
-
         
-        if(!( _currentState == MARCHE_VERS_NOURRITURE || _currentState == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre
+        
+        if(!( getCurrentState() == MARCHE_VERS_NOURRITURE || getCurrentState() == MARCHE_VERS_TOILETTES)) // Si je n'ai pas déjà un but de ce genre
         {
             if(_jaugeDeVessieActuelle >= _jaugeDeVessieTotale)
             {
                 System.out.println("Aaaahh pipiii !");
-                _currentState = MARCHE_VERS_TOILETTES;
+                changeCurrentState(MARCHE_VERS_TOILETTES);
                 _currentConstructDestination = _carteFestival.getRandomToilet();//_carteFestival.getNearestToilet();
             }
             else if(_jaugeDeFaimActuelle >= _jaugeDeFaimTotale) // Pipi > Faim dans la décision (voir pour mettre une proba de choix ?)
@@ -180,7 +196,7 @@ public class FestivalGoer extends FestivalEntity {
                 else
                 {
                     System.out.println("MON DIEU J'AI FAIIIIM");
-                    _currentState = MARCHE_VERS_NOURRITURE;
+                    changeCurrentState(MARCHE_VERS_NOURRITURE);
                     _currentConstructDestination =  _carteFestival.getRandomFoodStand();//_carteFestival.getNearestFoodStand();
                 }
                 
@@ -197,7 +213,7 @@ public class FestivalGoer extends FestivalEntity {
         SoundSubstance soundSubs;
         
         
-        switch(_currentState)
+        switch(getCurrentState())
         {
             case INIT: // State initial
                 goToAPlayingConcert();
@@ -206,15 +222,59 @@ public class FestivalGoer extends FestivalEntity {
                 
             case APPROCHER_SCENE:
                 
-                if(getPosition().equals(_previousPosition))
+                if(_isOnSamePosition)
                 {
                     // On a atteint une place correcte
-                    _currentState = ECOUTER_CONCERT;
+                    changeCurrentState(ECOUTER_CONCERT);
                     
                     break;
                 }
                 else if(_currentConstructDestination instanceof Scene)
                 {
+                    /*Direction direct = ((Scene)_currentConstructDestination).getEmissionDirection().getOpposite();
+                     * 
+                     * 
+                     * Collection <PerceivedTurtle> turtles = this.getPerceivedTurtles();
+                     * 
+                     * 
+                     * ArrayList<Point2i> pointsPossiblesRelatifs = new ArrayList<Point2i>();
+                     * pointsPossiblesRelatifs.add(direct.getPrevious().getOpposite().toRelativePoint());
+                     * pointsPossiblesRelatifs.add(direct.getNext().getOpposite().toRelativePoint());
+                     * pointsPossiblesRelatifs.add(direct.getOpposite().toRelativePoint());
+                     * 
+                     * ArrayList<Point2i> pointsPossibles = new ArrayList<Point2i>();
+                     * 
+                     * Point2i pt1= new Point2i(this.getPosition());
+                     * Point2i pt2= new Point2i(this.getPosition());
+                     * Point2i pt3= new Point2i(this.getPosition());
+                     * pt1.add(pointsPossiblesRelatifs.get(0).x(), pointsPossiblesRelatifs.get(0).y());
+                     * pt2.add(pointsPossiblesRelatifs.get(1).x(), pointsPossiblesRelatifs.get(1).y());
+                     * pt3.add(pointsPossiblesRelatifs.get(2).x(), pointsPossiblesRelatifs.get(2).y());
+                     * 
+                     * 
+                     * pointsPossibles.add(pt1);
+                     * pointsPossibles.add(pt2);
+                     * pointsPossibles.add(pt3);
+                     * 
+                     * for( PerceivedTurtle turtle : turtles )
+                     * {
+                     * int indice = pointsPossibles.indexOf(turtle.getPosition());
+                     * if(indice != -1)
+                     * {
+                     * pointsPossibles.remove(indice);
+                     * pointsPossiblesRelatifs.remove(indice);
+                     * }
+                     * }
+                     * System.out.println(pointsPossibles.size());
+                     * if(pointsPossibles.size()>0)
+                     * {
+                     * Point2i resultat = pointsPossiblesRelatifs.get(RandomUtils.getRand(pointsPossiblesRelatifs.size() - 1));
+                     * System.out.println(resultat);
+                     * setHeading(new Vector2f(resultat.getX(), resultat.getY()));
+                     * moveForward(1);
+                     * return;
+                     * }*/
+                    
                     Direction direct = ((Scene)_currentConstructDestination).getEmissionDirection().getOpposite();
                     Point2i relativePoint = direct.getOpposite().toRelativePoint();
                     setHeading(new Vector2f(relativePoint.getX(), relativePoint.getY()));
@@ -244,8 +304,7 @@ public class FestivalGoer extends FestivalEntity {
                 soundSubs = touchUp(SoundSubstance.class);
                 if(soundSubs != null && soundSubs.getScene().equals(_currentConstructDestination)) //touchUpWithSemantic
                 {
-                    _currentState = APPROCHER_SCENE;
-                    _currentPath = null;
+                    changeCurrentState(APPROCHER_SCENE, false);
                 }
                 
                 
@@ -271,7 +330,7 @@ public class FestivalGoer extends FestivalEntity {
                 
                 /* ArrayList<Point2i> casesInFrontOfMe = getCasesInFrontOfMe();
                  * Point2i relativePoint = new Point2i(_currentConstructDestination.getInteractCenter().getX() - getX(), _currentConstructDestination.getInteractCenter().getY() - getY());
-                 * 
+                 *
                  * if(casesInFrontOfMe.contains(relativePoint))
                  * {*/
                 
@@ -328,11 +387,7 @@ public class FestivalGoer extends FestivalEntity {
                 System.out.println("position : "+getPosition());
                 break;
         }
-        
-        
-        
-        
-        _previousPosition = getPosition();
+     
     }
     
     
@@ -344,7 +399,7 @@ public class FestivalGoer extends FestivalEntity {
      * _currentState = WANDERING;
      * return;
      * }
-     * 
+     *
      * }*/
     
     
@@ -355,7 +410,7 @@ public class FestivalGoer extends FestivalEntity {
     }
     
     public boolean listeningConcert() {
-        return _currentState == ECOUTER_CONCERT;
+        return getCurrentState() == ECOUTER_CONCERT;
     }
     
     public int listeningState() { // pour créer une animation des bras

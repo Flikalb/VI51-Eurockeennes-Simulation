@@ -7,6 +7,7 @@ import org.janusproject.jaak.environment.solver.ActionApplier;
 
 import fr.utbm.gi.vi51.project.agent.Direction;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleScene;
+import fr.utbm.gi.vi51.project.utils.RandomUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.janusproject.jaak.envinterface.perception.EnvironmentalObject;
@@ -153,7 +154,7 @@ public class Scene extends Construction {
     
     public Point2i getEmissionPosition()
     {
-        return new Point2i(Xci,Yci);
+        return new Point2i(Xci,Yci+ (RandomUtils.getRand(10)-5));
     }
 
     public Direction getEmissionDirection() {

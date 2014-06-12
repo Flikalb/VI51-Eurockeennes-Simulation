@@ -95,7 +95,7 @@ public class FestivalEntity extends Turtle
         super();
         //System.out.println("suicide : "+canCommitSuicide());
         setCommitSuicide(true);
-        
+        _informationsTurtle = new TurtleSemantic(this);
         _currentState = WANDERING;
         
     }
@@ -103,7 +103,8 @@ public class FestivalEntity extends Turtle
     @Override
     protected TurtleBody createTurtleBody(TurtleBodyFactory factory) {
         TurtleBody turtleBody = factory.createTurtleBody(getAddress(), _frustum);
-        turtleBody.setSemantic(_informationsTurtle);
+        if(turtleBody != null && _informationsTurtle != null)
+            turtleBody.setSemantic(_informationsTurtle);
         
         return turtleBody;
     }

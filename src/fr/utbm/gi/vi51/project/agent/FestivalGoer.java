@@ -93,12 +93,14 @@ public class FestivalGoer extends FestivalEntity {
         
         JaakTimeManager jaakTimeManager = getJaakTimeManager();
         
-        
         if(_currentState == LEAVE_EUROCKS) // Action la plus importante
-        {
+        {  
             moveToDestination();
-            if(getPosition().x() > 158)
+            
+            if(getPosition().x() > 157)
+            {
                 killMe();
+            }
             return;
         }
         

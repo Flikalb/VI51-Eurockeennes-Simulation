@@ -9,12 +9,16 @@ import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.agent.Kernels;
 
 import fr.utbm.gi.vi51.project.agent.Direction;
+import fr.utbm.gi.vi51.project.agent.TurtleSemantic;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstaclePumpRoom;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleTree;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWater;
 import fr.utbm.gi.vi51.project.environment.obstacles.ObstacleWaterClosed;
 import fr.utbm.gi.vi51.project.gui.FestivalPanel;
 import fr.utbm.gi.vi51.project.utils.Astar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.janusproject.jaak.envinterface.body.TurtleBody;
 
 public class FestivalSystem {
     
@@ -45,7 +49,8 @@ public class FestivalSystem {
     
     public static FestivalMap _festivalMap;
     
-    public static ConcertsManager _concertManager;
+    private static ConcertsManager _concertManager;
+    private static TurtleManager _turtleManager;
     
     public static JaakEnvironment createEnvironment() {
         // Create the Jaak environment with the correct size.
@@ -160,6 +165,9 @@ public class FestivalSystem {
         _concertManager = new ConcertsManager(GrandeScene, GreenHouse, Plage);
         _concertManager.start();
         
+        _turtleManager = new TurtleManager(environment);
+        _turtleManager.start();
+        
         // ap.putObject(130, 20, new ObstacleWater());
         
         
@@ -179,6 +187,10 @@ public class FestivalSystem {
         astar = new Astar(channel);
         return new FestivalPanel(channel, environment);
     }
+    
+    
+    
+    
     
     public static class ConcertsManager extends Thread
     {
@@ -260,4 +272,50 @@ public class FestivalSystem {
             
         }
     }
+    
+    
+    
+    
+     public static class TurtleManager extends Thread
+    {
+        
+        private JaakEnvironment _environment;
+        
+        public TurtleManager(JaakEnvironment environment) {
+            _environment = environment;
+        }
+
+        private TurtleManager() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        public void run() {
+            
+            while(true)
+            {
+                for(int x =0  ; x < _environment.getWidth() ; ++x)
+                {
+                    for(int y = 0 ; y < _environment.getHeight(); ++y)
+                    {
+                      //  System.out.println("TORTUE : "+x+" "+y);
+                        for(TurtleBody turtle : _environment.getTurtles(x, y))
+                        {
+                           TurtleSemantic semantic = ((TurtleSemantic)turtle.getSemantic());
+                           if(semantic != null && semantic.getOwner() != null && !semantic.getOwner().isAlive())
+                                _environment.removeBodyFor(semantic.getOwner().getAddress());
+                           
+                            //_environment.getActionApplier().removeTurtle(x, y, turtle);
+                        }
+                    }
+                }
+               // System.out.println("NEXT");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FestivalSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        }
+     }
 }
